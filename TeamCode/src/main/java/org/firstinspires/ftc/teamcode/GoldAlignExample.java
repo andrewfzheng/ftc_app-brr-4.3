@@ -35,7 +35,7 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@Autonomous(name="GoldAlign Example", group="DogeCV")
+@Autonomous(name="DogeCVGoldAlign", group="DogeCV")
 
 public class GoldAlignExample extends OpMode
 {
