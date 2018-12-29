@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.List;
@@ -65,17 +66,20 @@ public class TensorFlowCraterAuto extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
-    int LiftPower = 1;
-    double pos = 0;
-
-    DcMotor upMotor;
-    DcMotor downMotor;
     DcMotor flDrive;
     DcMotor frDrive;
     DcMotor rlDrive;
     DcMotor rrDrive;
-    Servo markerArm;
+
+    Servo intakeFlipServo;
+    Servo intakeSpinServo;
+    DcMotor upMotor;
+    DcMotor downMotor;
+    DcMotor inMotor;
     Servo dispServo;
+    Servo markerArm;
+    DigitalChannel horizontalLimit;
+    DigitalChannel verticalLimit;
 
 
     @Override
@@ -89,54 +93,101 @@ public class TensorFlowCraterAuto extends LinearOpMode {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD");
         }
 
+        //INIT HARDWARE
+
         flDrive = hardwareMap.get(DcMotor.class, "fl_drive");
         frDrive = hardwareMap.get(DcMotor.class, "fr_drive");
         rlDrive = hardwareMap.get(DcMotor.class, "rl_drive");
         rrDrive = hardwareMap.get(DcMotor.class, "rr_drive");
+        intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
+        intakeSpinServo = hardwareMap.get(Servo.class, "intake_spin_servo");
         upMotor = hardwareMap.get(DcMotor.class, "up_motor");
         downMotor = hardwareMap.get(DcMotor.class, "down_motor");
-        markerArm = hardwareMap.get(Servo.class, "marker_servo");
+        inMotor = hardwareMap.get(DcMotor.class, "in_motor");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
+        horizontalLimit = hardwareMap.get(DigitalChannel.class, "horizontal_limit");
+        verticalLimit = hardwareMap.get(DigitalChannel.class, "vertical_limit");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        downMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         flDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        upMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        downMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         flDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        flDrive.setDirection(DcMotor.Direction.REVERSE);
+        frDrive.setDirection(DcMotor.Direction.FORWARD);
+        rlDrive.setDirection(DcMotor.Direction.REVERSE);
+        rrDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        downMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        inMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        inMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         upMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         downMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        inMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        flDrive.setDirection(DcMotor.Direction.FORWARD);
-        frDrive.setDirection(DcMotor.Direction.REVERSE);
-        rlDrive.setDirection(DcMotor.Direction.FORWARD);
-        rrDrive.setDirection(DcMotor.Direction.REVERSE);
         upMotor.setDirection(DcMotor.Direction.FORWARD);
         downMotor.setDirection(DcMotor.Direction.REVERSE);
+        inMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        //VARIABLES FOR HARDWARE
+        double flDrivePower;
+        double frDrivePower;
+        double rlDrivePower;
+        double rrDrivePower;
+        double maxDrivePower;
+
+        double forward; //positive is forward
+        double rotate; //positive is clockwise
+
+        int currentHPos = 0;
+        int currentVUPPos = upMotor.getCurrentPosition();
+        int currentVDOWNPos = downMotor.getCurrentPosition();
+        boolean isVPositionHolding;
+        boolean isHPositionHolding;
+
+        boolean isAccelReleased = false;
+        boolean isAccelOn = true;
+
+        double dispServoUp = 0.9;
+        double dispServoDown = 0.2;
+        boolean isDispServoReleased = true;
+        boolean isDispServoUp = false;
+
+        double markerArmUp = 0.6;
+        double markerArmDown = 0.07;
+        boolean isMarkerReleased = true;
+        boolean isMarkerUp = true;
+
+        double intakeFlipServoUp = 0;
+        double intakeFlipServoDown = 1;
+        boolean isIntakeFlipReleased = true;
+        boolean isIntakeFlipUp = true;
 
         int currentUpPos = upMotor.getCurrentPosition();
         int currentDownPos = downMotor.getCurrentPosition();
-
         upMotor.setTargetPosition(currentUpPos);
         downMotor.setTargetPosition(currentDownPos);
+        upMotor.setPower(1);
+        downMotor.setPower(1);
 
-        upMotor.setPower(LiftPower);
-        downMotor.setPower(LiftPower);
+        markerArm.setPosition(markerArmUp);
+        dispServo.setPosition(dispServoDown);
 
-        markerArm.setPosition(0.6);
-        dispServo.setPosition(0.9);
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start");
@@ -144,6 +195,12 @@ public class TensorFlowCraterAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
+
+            dispServo.setPosition(dispServoUp);
+            sleep(400);
+            intakeFlipServo.setPosition(intakeFlipServoDown);
+            sleep(400);
+
             /** Activate Tensor Flow Object Detection. */
             if (tfod != null) {
                 tfod.activate();
@@ -155,103 +212,107 @@ public class TensorFlowCraterAuto extends LinearOpMode {
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
-                      if (updatedRecognitions.size() == 3) {
-                        int goldMineralX = -1;
-                        int silverMineral1X = -1;
-                        int silverMineral2X = -1;
-                        for (Recognition recognition : updatedRecognitions) {
-                          if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                            goldMineralX = (int) recognition.getLeft();
-                          } else if (silverMineral1X == -1) {
-                            silverMineral1X = (int) recognition.getLeft();
-                          } else {
-                            silverMineral2X = (int) recognition.getLeft();
-                          }
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 3) {
+                            int goldMineralX = -1;
+                            int silverMineral1X = -1;
+                            int silverMineral2X = -1;
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    goldMineralX = (int) recognition.getLeft();
+                                } else if (silverMineral1X == -1) {
+                                    silverMineral1X = (int) recognition.getLeft();
+                                } else {
+                                    silverMineral2X = (int) recognition.getLeft();
+                                }
+                            }
+
+
+                            intakeFlipServo.setPosition(intakeFlipServoUp);//SET TO FLIP UP SO CAN PUSH
+
+
+                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
+                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Left");
+                                    telemetry.update();
+
+                                    //turn left
+                                    encoderDrive(0.6, -16, 16, -16, 16);
+                                    //move forward
+                                    encoderDrive(1, 43, 43, 43, 43);
+                                    //move backward
+                                    encoderDrive(1, -43, -43, -43, -43);
+                                    //turn left
+                                    encoderDrive(0.6, -9, 9, -9, 9);
+                                    //move forward
+                                    encoderDrive(1, 75, 75, 75, 75);
+                                    //turn left
+                                    encoderDrive(0.6, -36, 36, -36, 36);
+                                    //move forward
+                                    encoderDrive(1, 100, 100, 100, 100);
+                                    //place marker
+                                    markerArm.setPosition(0.07);
+                                    //move backward
+                                    encoderDrive(1, -80, -80, -80, -80);
+                                    //turn left
+                                    encoderDrive(0.6, -90, 90, -90, 90);
+                                    //move forward
+                                    encoderDrive(1, 32, 32, 32, 32);
+                                    sleep(300000);
+                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Right");
+                                    telemetry.update();
+
+                                    //turn right
+                                    encoderDrive(0.6, 16, -16, 16, -16);
+                                    //move forward
+                                    encoderDrive(1, 43, 43, 43, 43);
+                                    //move backward
+                                    encoderDrive(1, -43, -43, -43, -43);
+                                    //turn left
+                                    encoderDrive(0.6, -42, 42, -42, 42);
+                                    //move forward
+                                    encoderDrive(1, 78, 78, 78, 78);
+                                    //turn left
+                                    encoderDrive(0.6, -32, 32, -32, 32);
+                                    //move forward
+                                    encoderDrive(1, 100, 100, 100, 100);
+                                    //place marker
+                                    markerArm.setPosition(0.07);
+                                    //move backward
+                                    encoderDrive(1, -99, -99, -99, -99);
+                                    //turn left
+                                    encoderDrive(0.6, -92, 92, -92, 92);
+                                    //move forward
+                                    encoderDrive(1, 30, 30, 30, 30);
+                                } else {
+                                    telemetry.addData("Gold Mineral Position", "Center");
+                                    telemetry.update();
+
+                                    //move forward
+                                    encoderDrive(1, 43, 43, 43, 43);
+                                    //move backward
+                                    encoderDrive(1, -43, -43, -43, -43);
+                                    //turn left
+                                    encoderDrive(0.6, -25, 25, -25, 25);
+                                    //move forward
+                                    encoderDrive(1, 75, 75, 75, 75);
+                                    //turn left
+                                    encoderDrive(0.6, -36, 36, -36, 36);
+                                    //move forward
+                                    encoderDrive(1, 100, 100, 100, 100);
+                                    //place marker
+                                    markerArm.setPosition(0.07);
+                                    //move backward
+                                    encoderDrive(1, -80, -80, -80, -80);
+                                    //turn left
+                                    encoderDrive(0.6, -97, 97, -97, 97);
+                                    //move forward
+                                    encoderDrive(1, 32, 32, 32, 32);
+                                    sleep(300000);
+                                }
+                            }
                         }
-                        if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                          if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                            telemetry.addData("Gold Mineral Position", "Left");
-                            telemetry.update();
-
-                              //turn left
-                              encoderDrive(0.6, -16, 16, -16, 16);
-                              //move forward
-                              encoderDrive(1, 43, 43, 43, 43);
-                              //move backward
-                              encoderDrive(1, -43, -43, -43, -43);
-                              //turn left
-                              encoderDrive(0.6, -9, 9, -9, 9);
-                              //move forward
-                              encoderDrive(1, 75, 75, 75, 75);
-                              //turn left
-                              encoderDrive(0.6, -36, 36, -36, 36);
-                              //move forward
-                              encoderDrive(1, 100, 100, 100, 100);
-                              //place marker
-                              markerArm.setPosition(0.07);
-                              //move backward
-                              encoderDrive(1, -80,-80,-80,-80);
-                              //turn left
-                              encoderDrive(0.6, -90, 90, -90, 90);
-                              //move forward
-                              encoderDrive(1, 32, 32, 32, 32);
-                          }
-                          else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                            telemetry.addData("Gold Mineral Position", "Right");
-                            telemetry.update();
-
-                              //turn right
-                              encoderDrive(0.6, 16, -16, 16, -16);
-                              //move forward
-                              encoderDrive(1, 43, 43, 43, 43);
-                              //move backward
-                              encoderDrive(1, -43, -43, -43, -43);
-                              //turn left
-                              encoderDrive(0.6, -42, 42, -42, 42);
-                              //move forward
-                              encoderDrive(1, 78, 78, 78, 78);
-                              //turn left
-                              encoderDrive(0.6, -32, 32, -32, 32);
-                              //move forward
-                              encoderDrive(1, 100, 100, 100, 100);
-                              //place marker
-                              markerArm.setPosition(0.07) ;
-                              //move backward
-                              encoderDrive(1, -99,-99,-99,-99);
-                              //turn left
-                              encoderDrive(0.6, -92, 92, -92, 92);
-                              //move forward
-                              encoderDrive(1, 30, 30, 30, 30);
-
-                          }
-                          else {
-                            telemetry.addData("Gold Mineral Position", "Center");
-                            telemetry.update();
-
-                              //move forward
-                              encoderDrive(1, 43, 43, 43, 43);
-                              //move backward
-                              encoderDrive(1, -43, -43, -43, -43);
-                              //turn left
-                              encoderDrive(0.6, -25, 25, -25, 25);
-                              //move forward
-                              encoderDrive(1, 75, 75, 75, 75);
-                              //turn left
-                              encoderDrive(0.6, -36, 36, -36, 36);
-                              //move forward
-                              encoderDrive(1, 100, 100, 100, 100);
-                              //place marker
-                              markerArm.setPosition(0.07);
-                              //move backward
-                              encoderDrive(1, -80,-80,-80,-80);
-                              //turn left
-                              encoderDrive(0.6, -97, 97, -97, 97);
-                              //move forward
-                              encoderDrive(1, 32, 32, 32, 32);
-                          }
-                        }
-                      }
                     }
                 }
             }
@@ -285,7 +346,7 @@ public class TensorFlowCraterAuto extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
