@@ -66,20 +66,20 @@ public class TensorFlowDepotAuto extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
-    DcMotor flDrive;
-    DcMotor frDrive;
-    DcMotor rlDrive;
-    DcMotor rrDrive;
+    private DcMotor flDrive;
+    private DcMotor frDrive;
+    private DcMotor rlDrive;
+    private DcMotor rrDrive;
 
-    Servo intakeFlipServo;
-    Servo intakeSpinServo;
-    DcMotor upMotor;
-    DcMotor downMotor;
-    DcMotor inMotor;
-    Servo dispServo;
-    Servo markerArm;
-    DigitalChannel horizontalLimit;
-    DigitalChannel verticalLimit;
+    private Servo intakeFlipServo;
+    private Servo intakeSpinServo;
+    private DcMotor upMotor;
+    private DcMotor downMotor;
+    private DcMotor inMotor;
+    private Servo dispServo;
+    private Servo markerArm;
+    private DigitalChannel horizontalLimit;
+    private DigitalChannel verticalLimit;
 
 
     @Override
@@ -107,6 +107,7 @@ public class TensorFlowDepotAuto extends LinearOpMode {
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
         horizontalLimit = hardwareMap.get(DigitalChannel.class, "horizontal_limit");
         verticalLimit = hardwareMap.get(DigitalChannel.class, "vertical_limit");
+        markerArm = hardwareMap.get(Servo.class, "marker_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -247,18 +248,18 @@ public class TensorFlowDepotAuto extends LinearOpMode {
                               //place marker
                               markerArm.setPosition(0.07);
                               //move backward
-                              encoderDrive(1, -60,-60,-60,-60);
+                              encoderDrive(1, -60, -60, -60, -60);
                               //turn right
                               encoderDrive(0.6, 89, -89, 89, -89);
                               //move forward
-                              encoderDrive(1,80, 80, 80, 80);
+                              encoderDrive(1, 80, 80, 80, 80);
                           }
                           else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                             telemetry.addData("Gold Mineral Position", "Right");
                             telemetry.update();
 
                               //turn right
-                              encoderDrive(0.6, 16, -16,16, -16);
+                              encoderDrive(0.6, 16, -16, 16, -16);
                               //move forward
                               encoderDrive(1, 80, 80, 80, 80);
                               //turn left
@@ -268,13 +269,13 @@ public class TensorFlowDepotAuto extends LinearOpMode {
                               //place marker
                               markerArm.setPosition(0.07);
                               //move backward
-                              encoderDrive(1, -10,-10,-10,-10);
+                              encoderDrive(1, -10, -10, -10, -10);
                               //turn left
-                              encoderDrive(0.6, -25, 25,-25, 25);
+                              encoderDrive(0.6, -25, 25, -25, 25);
                               //move forward
                               encoderDrive(1, 40, 40, 40, 40);
                               //turn left
-                              encoderDrive(0.6, -20, 20,-20, 20);
+                              encoderDrive(0.6, -20, 20, -20, 20);
                               //move forward
                               encoderDrive(0.6, 110, 110, 110, 110);
                           }

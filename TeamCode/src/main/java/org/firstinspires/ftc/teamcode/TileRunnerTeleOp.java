@@ -19,20 +19,20 @@ public class TileRunnerTeleOp extends LinearOpMode {
 
     //HARDWARE DECLARATION
 
-    DcMotor flDrive;
-    DcMotor frDrive;
-    DcMotor rlDrive;
-    DcMotor rrDrive;
+    private DcMotor flDrive;
+    private DcMotor frDrive;
+    private DcMotor rlDrive;
+    private DcMotor rrDrive;
 
-    Servo intakeFlipServo;
-    Servo intakeSpinServo;
-    DcMotor upMotor;
-    DcMotor downMotor;
-    DcMotor inMotor;
-    Servo dispServo;
-    Servo markerArm;
-    DigitalChannel horizontalLimit;
-    DigitalChannel verticalLimit;
+    private Servo intakeFlipServo;
+    private Servo intakeSpinServo;
+    private DcMotor upMotor;
+    private DcMotor downMotor;
+    private DcMotor inMotor;
+    private Servo dispServo;
+    private Servo markerArm;
+    private DigitalChannel horizontalLimit;
+    private DigitalChannel verticalLimit;
 
     @Override public void runOpMode(){
 
@@ -50,6 +50,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
         horizontalLimit = hardwareMap.get(DigitalChannel.class, "horizontal_limit");
         verticalLimit = hardwareMap.get(DigitalChannel.class, "vertical_limit");
+        markerArm = hardwareMap.get(Servo.class, "marker_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -215,7 +216,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             // vertical lift
-            if (gamepad2.dpad_down == true && verticalLimit.getState()) {
+            if (gamepad2.dpad_down && verticalLimit.getState()) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 upMotor.setPower(-1); //negative value to move up
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -223,8 +224,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 isVPositionHolding = false;
                 currentVUPPos = upMotor.getCurrentPosition();
                 currentVDOWNPos = upMotor.getCurrentPosition();
-            }
-            else if (gamepad2.dpad_up == true) {
+            } else if (gamepad2.dpad_up) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 upMotor.setPower(1); //positive value to move down
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

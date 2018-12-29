@@ -66,20 +66,20 @@ public class TensorFlowCraterAuto extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
-    DcMotor flDrive;
-    DcMotor frDrive;
-    DcMotor rlDrive;
-    DcMotor rrDrive;
+    private DcMotor flDrive;
+    private DcMotor frDrive;
+    private DcMotor rlDrive;
+    private DcMotor rrDrive;
 
-    Servo intakeFlipServo;
-    Servo intakeSpinServo;
-    DcMotor upMotor;
-    DcMotor downMotor;
-    DcMotor inMotor;
-    Servo dispServo;
-    Servo markerArm;
-    DigitalChannel horizontalLimit;
-    DigitalChannel verticalLimit;
+    private Servo intakeFlipServo;
+    private Servo intakeSpinServo;
+    private DcMotor upMotor;
+    private DcMotor downMotor;
+    private DcMotor inMotor;
+    private Servo dispServo;
+    private Servo markerArm;
+    private DigitalChannel horizontalLimit;
+    private DigitalChannel verticalLimit;
 
 
     @Override
@@ -107,6 +107,7 @@ public class TensorFlowCraterAuto extends LinearOpMode {
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
         horizontalLimit = hardwareMap.get(DigitalChannel.class, "horizontal_limit");
         verticalLimit = hardwareMap.get(DigitalChannel.class, "vertical_limit");
+        markerArm = hardwareMap.get(Servo.class, "marker_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
