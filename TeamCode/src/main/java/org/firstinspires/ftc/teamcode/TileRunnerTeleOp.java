@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
@@ -31,8 +29,6 @@ public class TileRunnerTeleOp extends LinearOpMode {
     private DcMotor inMotor;
     private Servo dispServo;
     private Servo markerArm;
-    private DigitalChannel horizontalLimit;
-    private DigitalChannel verticalLimit;
 
     @Override public void runOpMode(){
 
@@ -48,8 +44,6 @@ public class TileRunnerTeleOp extends LinearOpMode {
         downMotor = hardwareMap.get(DcMotor.class, "down_motor");
         inMotor = hardwareMap.get(DcMotor.class, "in_motor");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
-        horizontalLimit = hardwareMap.get(DigitalChannel.class, "horizontal_limit");
-        verticalLimit = hardwareMap.get(DigitalChannel.class, "vertical_limit");
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -107,7 +101,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isAccelReleased = false;
         boolean isAccelOn = true;
 
-        double dispServoUp = 0.9;
+        double dispServoUp = 0.85;
         double dispServoDown = 0.2;
         boolean isDispServoReleased = true;
         boolean isDispServoUp = false;
@@ -117,21 +111,14 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isMarkerReleased = true;
         boolean isMarkerUp = true;
 
-        double intakeFlipServoUp = 0;
-        double instakeFlipServoDown = 1;
+        double intakeFlipServoUp = 0.8;
+        double intakeFlipServoMid = 0.4;
+        double instakeFlipServoDown = 0.25;
         boolean isIntakeFlipReleased = true;
         boolean isIntakeFlipUp = true;
 
         int currentUpPos = upMotor.getCurrentPosition();
         int currentDownPos = downMotor.getCurrentPosition();
-        upMotor.setTargetPosition(currentUpPos);
-        downMotor.setTargetPosition(currentDownPos);
-        upMotor.setPower(1);
-        downMotor.setPower(1);
-
-        markerArm.setPosition(markerArmDown);
-        dispServo.setPosition(dispServoUp);
-
 
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start");
@@ -145,7 +132,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         while (opModeIsActive()){
 
             //ITERATIVE CODE
-            forward = -gamepad1.left_stick_y;
+            forward = gamepad1.left_stick_y;
             //strafe = gamepad1.right_stick_x;
             rotate = gamepad1.left_stick_x;
 
@@ -216,19 +203,19 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             // vertical lift
-            if (gamepad2.dpad_down && verticalLimit.getState()) {
+            if (gamepad2.dpad_down) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                upMotor.setPower(-1); //negative value to move up
+                upMotor.setPower(-1); //negative value to move down
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                downMotor.setPower(-1); //negative value to move up
+                downMotor.setPower(-1); //negative value to move down
                 isVPositionHolding = false;
                 currentVUPPos = upMotor.getCurrentPosition();
                 currentVDOWNPos = upMotor.getCurrentPosition();
             } else if (gamepad2.dpad_up) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                upMotor.setPower(1); //positive value to move down
+                upMotor.setPower(1); //positive value to move up
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                downMotor.setPower(1); //positive value to move down
+                downMotor.setPower(1); //positive value to move up
                 isVPositionHolding = false;
                 currentVDOWNPos = upMotor.getCurrentPosition();
                 currentVUPPos = upMotor.getCurrentPosition();
@@ -242,7 +229,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             //vertical dispenser (dump on top)
-            if (gamepad1.y || gamepad2.y) {
+            if (gamepad2.a) {
                 if (isDispServoReleased) {
                     isDispServoReleased = false;
                     if (isDispServoUp) {
@@ -261,8 +248,8 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 dispServo.setPosition(dispServoDown);
             }
 
-            //horizontal intake flip
-            if (gamepad1.x || gamepad2.x) {
+            //horizontal intake flip up-down
+            if (gamepad2.x) {
                 if (isIntakeFlipReleased) {
                     isIntakeFlipReleased = false;
                     if (isIntakeFlipUp) {
@@ -281,6 +268,26 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 intakeFlipServo.setPosition(instakeFlipServoDown);
             }
 
+            //horizontal intake flip up-middle
+            if (gamepad2.y) {
+                if (isIntakeFlipReleased) {
+                    isIntakeFlipReleased = false;
+                    if (isIntakeFlipUp) {
+                        isIntakeFlipUp = false;
+                    } else {
+                        isIntakeFlipUp = true;
+                    }
+                }
+            } else {
+                isIntakeFlipReleased = true;
+            }
+
+            if (isIntakeFlipUp) {
+                intakeFlipServo.setPosition(intakeFlipServoUp);
+            } else {
+                intakeFlipServo.setPosition(intakeFlipServoMid);
+            }
+
             //horizontal intake retraction
             if (-gamepad2.right_stick_y != 0) { //flipped y input because controller input is switched
                 inMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -295,11 +302,11 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             //activate collector only if bumpers are pressed
-            if (gamepad2.left_bumper || gamepad1.left_bumper) {
+            if (gamepad2.left_bumper) {
                 intakeSpinServo.setPosition(1);
             }
             //activate collector only if bumpers are pressed
-            else if (gamepad2.right_bumper || gamepad1.left_bumper) {
+            else if (gamepad2.right_bumper) {
                 intakeSpinServo.setPosition(0);
             }
             //stop intake

@@ -17,8 +17,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     // Detector object
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
-    int LiftPower = 1;
-    double pos = 0;
     String mineralPos = "none";
 
     DcMotor upMotor;
@@ -29,6 +27,16 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     DcMotor rrDrive;
     Servo markerArm;
     Servo dispServo;
+    Servo intakeFlipServo;
+
+    int LiftPower = 1;
+    double pos = 0;
+    double dispServoUp = 0.85;
+    double dispServoDown = 0.2;
+    double markerArmUp = 0.6;
+    double markerArmDown = 0.07;
+    double instakeFlipServoDown = 0.5;
+
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -59,6 +67,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         downMotor = hardwareMap.get(DcMotor.class, "down_motor");
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
+        intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -97,8 +106,8 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         upMotor.setPower(LiftPower);
         downMotor.setPower(LiftPower);
 
-        markerArm.setPosition(0.6);
-        dispServo.setPosition(0.9);
+        markerArm.setPosition(markerArmUp);
+        dispServo.setPosition(dispServoDown);
 
         waitForStart();
 
@@ -110,6 +119,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
 //            upMotor.setPower(LiftPower);
 //            downMotor.setPower(LiftPower);
             sleep(3000);
+            dispServo.setPosition(dispServoUp);
 
             //move forward
             encoderDrive(1, 8, 8, 8, 8);
@@ -142,11 +152,15 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
-                markerArm.setPosition(0.07);
+                markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -80,-80,-80,-80);
                 //turn left
                 encoderDrive(0.6, -97, 97, -97, 97);
+                //lift arm
+                markerArm.setPosition(markerArmUp);
+                //drop collector
+                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1, 32, 32, 32, 32);
                 sleep(300000);
@@ -175,11 +189,15 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
-                markerArm.setPosition(0.07);
+                markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -80,-80,-80,-80);
                 //turn left
                 encoderDrive(0.6, -90, 90, -90, 90);
+                //lift arm
+                markerArm.setPosition(markerArmUp);
+                //drop collector
+                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1, 32, 32, 32, 32);
                 sleep(300000);
@@ -208,11 +226,15 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
-                markerArm.setPosition(0.07) ;
+                markerArm.setPosition(0.07);
                 //move backward
                 encoderDrive(1, -99,-99,-99,-99);
                 //turn left
                 encoderDrive(0.6, -92, 92, -92, 92);
+                //lift arm
+                markerArm.setPosition(markerArmUp);
+                //drop collector
+                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1, 30, 30, 30, 30);
             }

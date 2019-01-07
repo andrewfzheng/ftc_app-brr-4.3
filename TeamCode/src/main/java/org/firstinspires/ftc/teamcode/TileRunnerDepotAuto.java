@@ -15,8 +15,6 @@ public class TileRunnerDepotAuto extends LinearOpMode {
     // Detector object
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
-    int LiftPower = 1;
-    double pos = 0;
     String mineralPos = "none";
 
     DcMotor upMotor;
@@ -27,7 +25,15 @@ public class TileRunnerDepotAuto extends LinearOpMode {
     DcMotor rrDrive;
     Servo markerArm;
     Servo dispServo;
+    Servo intakeFlipServo;
 
+    int LiftPower = 1;
+    double pos = 0;
+    double dispServoUp = 0.85;
+    double dispServoDown = 0.2;
+    double markerArmUp = 0.6;
+    double markerArmDown = 0.07;
+    double instakeFlipServoDown = 0.5;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -58,6 +64,8 @@ public class TileRunnerDepotAuto extends LinearOpMode {
         downMotor = hardwareMap.get(DcMotor.class, "down_motor");
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
+        intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
+
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -96,8 +104,8 @@ public class TileRunnerDepotAuto extends LinearOpMode {
         upMotor.setPower(LiftPower);
         downMotor.setPower(LiftPower);
 
-        markerArm.setPosition(0.6);
-        dispServo.setPosition(0.9);
+        markerArm.setPosition(markerArmUp);
+        dispServo.setPosition(dispServoDown);
 
         waitForStart();
 
@@ -109,11 +117,13 @@ public class TileRunnerDepotAuto extends LinearOpMode {
 //            upMotor.setPower(LiftPower);
 //            downMotor.setPower(LiftPower);
             sleep(3000);
+            dispServo.setPosition(dispServoUp);
 
             //move forward
             encoderDrive(1, 8, 8, 8, 8);
             //start vuforia
             pos = detector.getXPosition();
+
             telemetry.addData("X position" , detector.getXPosition()); // Gold X position.
             telemetry.update();
 
@@ -128,11 +138,15 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 77, 77, 77, 77);
                 //place marker
-                markerArm.setPosition(0.07);
+                markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -60, -60, -60, -60);
                 //turn left
                 encoderDrive(0.6, -41, 41, -41, 41);
+                //lift arm
+                markerArm.setPosition(markerArmUp);
+                //drop collector
+                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(0.6, 90, 90, 90, 90);
             }
@@ -153,11 +167,15 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 50, 50, 50, 50);
                 //place marker
-                markerArm.setPosition(0.07);
+                markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -60,-60,-60,-60);
                 //turn right
                 encoderDrive(0.6, 89, -89, 89, -89);
+                //lift arm
+                markerArm.setPosition(markerArmUp);
+                //drop collector
+                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1,80, 80, 80, 80);
             }
@@ -178,7 +196,7 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 40, 40, 40, 40);
                 //place marker
-                markerArm.setPosition(0.07);
+                markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -10,-10,-10,-10);
                 //turn left
@@ -187,6 +205,10 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 encoderDrive(1, 40, 40, 40, 40);
                 //turn left
                 encoderDrive(0.6, -20, 20,-20, 20);
+                //lift arm
+                markerArm.setPosition(markerArmUp);
+                //drop collector
+                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(0.6, 110, 110, 110, 110);
             }
