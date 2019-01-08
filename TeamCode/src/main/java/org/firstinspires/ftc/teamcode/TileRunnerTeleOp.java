@@ -111,16 +111,19 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isMarkerReleased = true;
         boolean isMarkerUp = true;
 
-        double intakeFlipServoUp = 0.8;
-        double intakeFlipServoMid = 0.4;
-        double instakeFlipServoDown = 0.25;
+        double intakeFlipServoUp = 0.92;
+        double intakeFlipServoMid = 0.35;
+        double instakeFlipServoDown = 0.19;
         boolean isIntakeFlipReleased = true;
+        boolean isIntakeFlipMidReleased = true;
         boolean isIntakeFlipUp = true;
+        boolean isIntakeFlipMid = true;
+
 
         int currentUpPos = upMotor.getCurrentPosition();
         int currentDownPos = downMotor.getCurrentPosition();
 
-        /** Wait for the game to begin */
+        // Wait for the game to begin
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
         waitForStart();
@@ -268,23 +271,8 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 intakeFlipServo.setPosition(instakeFlipServoDown);
             }
 
-            //horizontal intake flip up-middle
+            //horizontal intake flip to middle
             if (gamepad2.y) {
-                if (isIntakeFlipReleased) {
-                    isIntakeFlipReleased = false;
-                    if (isIntakeFlipUp) {
-                        isIntakeFlipUp = false;
-                    } else {
-                        isIntakeFlipUp = true;
-                    }
-                }
-            } else {
-                isIntakeFlipReleased = true;
-            }
-
-            if (isIntakeFlipUp) {
-                intakeFlipServo.setPosition(intakeFlipServoUp);
-            } else {
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }
 
