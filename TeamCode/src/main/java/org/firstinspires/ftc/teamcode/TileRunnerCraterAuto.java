@@ -27,15 +27,13 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     DcMotor rrDrive;
     Servo markerArm;
     Servo dispServo;
-    Servo intakeFlipServo;
 
     int LiftPower = 1;
     double pos = 0;
-    double dispServoUp = 0.85;
+    double dispServoUp = 0.8;
     double dispServoDown = 0.2;
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
-    double instakeFlipServoDown = 0.5;
 
 
     @Override
@@ -67,7 +65,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         downMotor = hardwareMap.get(DcMotor.class, "down_motor");
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
-        intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -157,10 +154,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 encoderDrive(1, -80,-80,-80,-80);
                 //turn left
                 encoderDrive(0.6, -97, 97, -97, 97);
-                //lift arm
-                markerArm.setPosition(markerArmUp);
-                //drop collector
-                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1, 32, 32, 32, 32);
                 sleep(300000);
@@ -194,10 +187,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 encoderDrive(1, -80,-80,-80,-80);
                 //turn left
                 encoderDrive(0.6, -90, 90, -90, 90);
-                //lift arm
-                markerArm.setPosition(markerArmUp);
-                //drop collector
-                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1, 32, 32, 32, 32);
                 sleep(300000);
@@ -231,10 +220,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 encoderDrive(1, -99,-99,-99,-99);
                 //turn left
                 encoderDrive(0.6, -92, 92, -92, 92);
-                //lift arm
-                markerArm.setPosition(markerArmUp);
-                //drop collector
-                intakeFlipServo.setPosition(instakeFlipServoDown);
                 //move forward
                 encoderDrive(1, 30, 30, 30, 30);
             }

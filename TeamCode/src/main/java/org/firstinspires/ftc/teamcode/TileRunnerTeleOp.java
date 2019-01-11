@@ -101,7 +101,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isAccelReleased = false;
         boolean isAccelOn = true;
 
-        double dispServoUp = 0.85;
+        double dispServoUp = 0.78;
         double dispServoDown = 0.2;
         boolean isDispServoReleased = true;
         boolean isDispServoUp = false;
@@ -115,10 +115,9 @@ public class TileRunnerTeleOp extends LinearOpMode {
         double intakeFlipServoMid = 0.35;
         double instakeFlipServoDown = 0.19;
         boolean isIntakeFlipReleased = true;
-        boolean isIntakeFlipMidReleased = true;
         boolean isIntakeFlipUp = true;
         boolean isIntakeFlipMid = true;
-
+        boolean isIntakeFlipMidReleased = true;
 
         int currentUpPos = upMotor.getCurrentPosition();
         int currentDownPos = downMotor.getCurrentPosition();
@@ -271,6 +270,26 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 intakeFlipServo.setPosition(instakeFlipServoDown);
             }
 
+            //horizontal intake flip up-down
+            if (gamepad2.y) {
+                if (isIntakeFlipMidReleased) {
+                    isIntakeFlipMidReleased = false;
+                    if (isIntakeFlipMid) {
+                        isIntakeFlipMid = false;
+                    } else {
+                        isIntakeFlipMid = true;
+                    }
+                }
+            } else {
+                isIntakeFlipMidReleased = true;
+            }
+
+            if (isIntakeFlipMid) {
+                intakeFlipServo.setPosition(intakeFlipServoMid);
+            } else {
+                intakeFlipServo.setPosition(intakeFlipServoUp);
+            }
+
             //horizontal intake flip to middle
             if (gamepad2.y) {
                 intakeFlipServo.setPosition(intakeFlipServoMid);
@@ -290,11 +309,11 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             //activate collector only if bumpers are pressed
-            if (gamepad2.left_bumper) {
+            if (gamepad2.left_trigger > 0) {
                 intakeSpinServo.setPosition(1);
             }
             //activate collector only if bumpers are pressed
-            else if (gamepad2.right_bumper) {
+            else if (gamepad2.right_trigger > 0) {
                 intakeSpinServo.setPosition(0);
             }
             //stop intake

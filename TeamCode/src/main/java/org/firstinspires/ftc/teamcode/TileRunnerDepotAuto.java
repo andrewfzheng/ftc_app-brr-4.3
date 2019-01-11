@@ -29,7 +29,7 @@ public class TileRunnerDepotAuto extends LinearOpMode {
 
     int LiftPower = 1;
     double pos = 0;
-    double dispServoUp = 0.85;
+    double dispServoUp = 0.8;
     double dispServoDown = 0.2;
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
