@@ -5,4 +5,5 @@
       android:versionName="3.4.3">
 
     <uses-sdk android:targetSdkVersion="21" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 </manifest>
