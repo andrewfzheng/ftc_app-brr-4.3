@@ -212,7 +212,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 isVPositionHolding = false;
                 currentVUPPos = upMotor.getCurrentPosition();
                 currentVDOWNPos = upMotor.getCurrentPosition();
-            } else if (gamepad1.dpad_up || gamepad2.dpad_down) {
+            } else if (gamepad1.dpad_up || gamepad2.dpad_up) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 upMotor.setPower(1); //positive value to move up
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

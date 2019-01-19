@@ -118,8 +118,8 @@ public class TileRunnerDepotAuto extends LinearOpMode {
             intakeFlipServo.setPosition(intakeFlipServoDown);
             sleep(100);
             //detach robot from lander
-            upMotor.setTargetPosition(currentUpPos + 2200);
-            downMotor.setTargetPosition(currentDownPos + 2200);
+            upMotor.setTargetPosition(currentUpPos + 1800);
+            downMotor.setTargetPosition(currentDownPos + 1800);
             upMotor.setPower(LiftPower);
             downMotor.setPower(LiftPower);
             sleep(3000);
@@ -205,7 +205,7 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 80, 80, 80, 80);
                 //turn left
-                encoderDrive(0.6, -30, 30, -30, 30);
+                encoderDrive(0.6, -35, 35, -35, 35);
                 //move forward
                 encoderDrive(1, 40, 40, 40, 40);
                 //place marker
@@ -215,13 +215,13 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //turn left
                 encoderDrive(0.6, -25, 25,-25, 25);
                 //move forward
-                encoderDrive(1, 40, 40, 40, 40);
+                encoderDrive(1, 30, 30, 30, 30);
                 //turn left
-                encoderDrive(0.6, -20, 20,-20, 20);
+                encoderDrive(0.6, -24,24,-24, 24);
                 //lift arm
                 markerArm.setPosition(markerArmUp);
                 //move forward
-                encoderDrive(0.6, 110, 110, 110, 110);
+                encoderDrive(1, 110, 110, 110, 110);
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }

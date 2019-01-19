@@ -133,8 +133,8 @@ public class TileRunnerCraterAuto extends LinearOpMode {
             intakeFlipServo.setPosition(intakeFlipServoDown);
             sleep(100);
             //detach robot from lander
-            upMotor.setTargetPosition(currentUpPos + 2200);
-            downMotor.setTargetPosition(currentDownPos + 2200);
+            upMotor.setTargetPosition(currentUpPos + 1800);
+            downMotor.setTargetPosition(currentDownPos + 1800);
             upMotor.setPower(LiftPower);
             downMotor.setPower(LiftPower);
             sleep(3000);
@@ -167,22 +167,19 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //turn left
                 encoderDrive(0.6, -27, 27, -27, 27);
                 //move forward
-                encoderDrive(1, 75, 75, 75, 75);
+                encoderDrive(1, 77, 77, 77, 77);
                 //turn left
                 encoderDrive(0.6, -39, 39, -39, 39);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
                 markerArm.setPosition(markerArmDown);
-                //move backward
-                encoderDrive(1, -80,-80,-80,-80);
                 //turn left
-                encoderDrive(0.6, -97, 97, -97, 97);
-                //move forward
-                encoderDrive(1, 32, 32, 32, 32);
-                sleep(300000);
+                encoderDrive(0.6, -2, 2, -2, 2);
+                //move backward
+                encoderDrive(1, -130,-130,-130,-130);
             }
-            //check if mineral is in right position
+            //check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
 
                 //turn off detector
@@ -203,17 +200,15 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 75, 75, 75, 75);
                 //turn left
-                encoderDrive(0.6, -39, 39, -39, 39);
+                encoderDrive(0.6, -42, 42, -42, 42);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
                 markerArm.setPosition(markerArmDown);
-                //move backward
-                encoderDrive(1, -80,-80,-80,-80);
                 //turn left
-                encoderDrive(0.6, -90, 90, -90, 90);
-                //move forward
-                encoderDrive(1, 32, 32, 32, 32);
+                encoderDrive(0.6, -3, 3, -3, 3);
+                //move backward
+                encoderDrive(1, -130,-130,-130,-130);
                 sleep(300000);
             }
             //go to right position
@@ -229,7 +224,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //turn right
                 encoderDrive(0.6, 16, -16, 16, -16);
                 //move forward
-                encoderDrive(1, 43, 43, 43, 43);
+                encoderDrive(1, 42, 42, 42, 42);
                 //move backward
                 encoderDrive(1, -43, -43, -43, -43);
                 //turn left
@@ -237,17 +232,15 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 78, 78, 78, 78);
                 //turn left
-                encoderDrive(0.6, -35, 35, -35, 35);
+                encoderDrive(0.6, -41, 41, -41, 41);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
                 markerArm.setPosition(0.07);
-                //move backward
-                encoderDrive(1, -99,-99,-99,-99);
                 //turn left
-                encoderDrive(0.6, -92, 92, -92, 92);
-                //move forward
-                encoderDrive(1, 30, 30, 30, 30);
+                encoderDrive(0.6, -2, 2, -2, 2);
+                //move backward
+                encoderDrive(1, -140,-140,-140,-140);
             }
             detector.disable();
             //wakeLock.release();
