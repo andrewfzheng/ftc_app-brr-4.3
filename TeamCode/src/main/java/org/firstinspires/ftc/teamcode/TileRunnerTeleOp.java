@@ -99,10 +99,10 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isHPositionHolding;
 
         boolean isAccelReleased = false;
-        boolean isAccelOn = true;
+        boolean isAccelOn = false;
 
-        double dispServoUp = 0.80;
-        double dispServoDown = 0.14;
+        double dispServoUp = 0.85;
+        double dispServoDown = 0.18;
         boolean isDispServoReleased = true;
         boolean isDispServoUp = false;
 
@@ -204,7 +204,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             // vertical lift
-            if (gamepad1.dpad_down || gamepad2.dpad_down) {
+            if (gamepad2.dpad_down) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 upMotor.setPower(-1); //negative value to move down
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -212,7 +212,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 isVPositionHolding = false;
                 currentVUPPos = upMotor.getCurrentPosition();
                 currentVDOWNPos = upMotor.getCurrentPosition();
-            } else if (gamepad1.dpad_up || gamepad2.dpad_up) {
+            } else if (gamepad2.dpad_up) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 upMotor.setPower(1); //positive value to move up
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -222,10 +222,12 @@ public class TileRunnerTeleOp extends LinearOpMode {
                 currentVUPPos = upMotor.getCurrentPosition();
             }
             else {
-                upMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                upMotor.setTargetPosition(currentVUPPos);
-                downMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                downMotor.setTargetPosition(currentVDOWNPos);
+                upMotor.setPower(0);
+                downMotor.setPower(0);
+//                upMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                upMotor.setTargetPosition(currentVUPPos);
+//                downMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                downMotor.setTargetPosition(currentVDOWNPos);
                 isVPositionHolding = true;
             }
 
@@ -250,18 +252,6 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             //horizontal intake flip up-down-middle
-//            if (gamepad2.x) {
-//                if (isIntakeFlipReleased) {
-//                    isIntakeFlipReleased = false;
-//                    if (isIntakeFlipUp) {
-//                        isIntakeFlipUp = false;
-//                    } else {
-//                        isIntakeFlipUp = true;
-//                    }
-//                }
-//            } else {
-//                isIntakeFlipReleased = true;
-//            }
             if (gamepad2.x) {
                 intakeFlipPos = 0;
             } else if (gamepad2.y) {
@@ -279,21 +269,22 @@ public class TileRunnerTeleOp extends LinearOpMode {
             }
 
             //horizontal intake retraction
-            if (gamepad2.right_stick_y > 0) { //flipped y input because controller input is switched
+            if (gamepad1.y) {
                 inMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                inMotor.setPower(-1); //no need to readjust up or down power because using ENCODERS
+                inMotor.setPower(-0.5); //no need to readjust up or down power because using ENCODERS
                 isHPositionHolding = false;
                 currentHPos = inMotor.getCurrentPosition();
             }
-            else if (gamepad2.right_stick_y < 0) {
+            else if (gamepad1.x) {
                 inMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                inMotor.setPower(1); //no need to readjust up or down power because using ENCODERS
+                inMotor.setPower(0.5); //no need to readjust up or down power because using ENCODERS
                 isHPositionHolding = false;
                 currentHPos = inMotor.getCurrentPosition();
             }
             else {
-                inMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                inMotor.setTargetPosition(currentHPos);
+                inMotor.setPower(0);
+//                inMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                inMotor.setTargetPosition(currentHPos);
                 isHPositionHolding = true;
             }
 

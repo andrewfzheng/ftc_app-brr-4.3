@@ -131,7 +131,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
 
         while (opModeIsActive()) {
             intakeFlipServo.setPosition(intakeFlipServoDown);
-            sleep(100);
             //detach robot from lander
             upMotor.setTargetPosition(currentUpPos + 1800);
             downMotor.setTargetPosition(currentDownPos + 1800);
@@ -169,13 +168,13 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 //move forward
                 encoderDrive(1, 77, 77, 77, 77);
                 //turn left
-                encoderDrive(0.6, -39, 39, -39, 39);
+                encoderDrive(0.6, -41, 41, -41, 41);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
                 markerArm.setPosition(markerArmDown);
                 //turn left
-                encoderDrive(0.6, -2, 2, -2, 2);
+                encoderDrive(0.6, -3, 3, -3, 3);
                 //move backward
                 encoderDrive(1, -130,-130,-130,-130);
             }
