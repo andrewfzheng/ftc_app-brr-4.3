@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.dogecv;
 
-import android.content.Context;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
-
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
@@ -37,12 +33,11 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     Servo markerArm;
     Servo dispServo;
     Servo intakeFlipServo;
-    Servo intakeSpinServo;
 
     int LiftPower = 1;
     double pos = 0;
-    double dispServoUp = 0.8;
-    double dispServoDown = 0.1;
+    double dispServoUp = 0.09765625;
+    double dispServoDown = 0.78296875;
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
     double intakeFlipServoUp = 0.92;
@@ -83,8 +78,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
-        intakeSpinServo = hardwareMap.get(Servo.class, "intake_spin_servo");
-
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -125,18 +118,17 @@ public class TileRunnerCraterAuto extends LinearOpMode {
 
         markerArm.setPosition(markerArmUp);
         dispServo.setPosition(dispServoDown);
-        intakeFlipServo.setPosition(intakeFlipServoUp);
 
         waitForStart();
 
         while (opModeIsActive()) {
             intakeFlipServo.setPosition(intakeFlipServoDown);
             //detach robot from lander
-            upMotor.setTargetPosition(currentUpPos + 1800);
-            downMotor.setTargetPosition(currentDownPos + 1800);
+            upMotor.setTargetPosition(currentUpPos + 1000);
+            downMotor.setTargetPosition(currentDownPos + 1000);
             upMotor.setPower(LiftPower);
             downMotor.setPower(LiftPower);
-            sleep(3000);
+            sleep(2200);
 
             dispServo.setPosition(dispServoUp);
 
@@ -148,35 +140,36 @@ public class TileRunnerCraterAuto extends LinearOpMode {
             telemetry.addData("X position" , detector.getXPosition()); // Gold X position.
             telemetry.update();
 
-            //check if mineral is in center position
-            if (100 < pos && pos < 350 && detector.isFound()) {
+            //check if mineral is in right position
+            if (pos > 350 && detector.isFound()) {
 
                 //turn off detector
                 detector.disable();
-                mineralPos = "center";
+                mineralPos = "right";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
                 intakeFlipServo.setPosition(intakeFlipServoUp);
 
+                //turn right
+                encoderDrive(0.6, 16, -16, 16, -16);
                 //move forward
-                encoderDrive(1, 43, 43, 43, 43);
+                encoderDrive(1, 42, 42, 42, 42);
                 //move backward
                 encoderDrive(1, -43, -43, -43, -43);
-                runtime.reset();
                 //turn left
-                encoderDrive(0.6, -27, 27, -27, 27);
+                encoderDrive(0.6, -42, 42, -42, 42);
                 //move forward
-                encoderDrive(1, 77, 77, 77, 77);
+                encoderDrive(1, 78, 78, 78, 78);
                 //turn left
                 encoderDrive(0.6, -41, 41, -41, 41);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
-                markerArm.setPosition(markerArmDown);
+                markerArm.setPosition(0.07);
                 //turn left
-                encoderDrive(0.6, -3, 3, -3, 3);
+                encoderDrive(0.6, -2, 2, -2, 2);
                 //move backward
-                encoderDrive(1, -130,-130,-130,-130);
+                encoderDrive(1, -140,-140,-140,-140);
             }
             //check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
@@ -210,36 +203,35 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 encoderDrive(1, -130,-130,-130,-130);
                 sleep(300000);
             }
-            //go to right position
+            //go to center position
             else {
 
                 //turn off detector
                 detector.disable();
-                mineralPos = "right";
+                mineralPos = "center";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
                 intakeFlipServo.setPosition(intakeFlipServoUp);
 
-                //turn right
-                encoderDrive(0.6, 16, -16, 16, -16);
                 //move forward
-                encoderDrive(1, 42, 42, 42, 42);
+                encoderDrive(1, 43, 43, 43, 43);
                 //move backward
                 encoderDrive(1, -43, -43, -43, -43);
+                runtime.reset();
                 //turn left
-                encoderDrive(0.6, -42, 42, -42, 42);
+                encoderDrive(0.6, -27, 27, -27, 27);
                 //move forward
-                encoderDrive(1, 78, 78, 78, 78);
+                encoderDrive(1, 77, 77, 77, 77);
                 //turn left
                 encoderDrive(0.6, -41, 41, -41, 41);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 //place marker
-                markerArm.setPosition(0.07);
+                markerArm.setPosition(markerArmDown);
                 //turn left
-                encoderDrive(0.6, -2, 2, -2, 2);
+                encoderDrive(0.6, -3, 3, -3, 3);
                 //move backward
-                encoderDrive(1, -140,-140,-140,-140);
+                encoderDrive(1, -130,-130,-130,-130);
             }
             detector.disable();
             //wakeLock.release();

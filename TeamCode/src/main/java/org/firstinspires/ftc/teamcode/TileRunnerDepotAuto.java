@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.CameraDevice;
 
 @Autonomous(name="TileRunnerDepotAuto", group="DogeCV")
 
@@ -26,12 +27,11 @@ public class TileRunnerDepotAuto extends LinearOpMode {
     Servo markerArm;
     Servo dispServo;
     Servo intakeFlipServo;
-    Servo intakeSpinServo;
 
     int LiftPower = 1;
     double pos = 0;
-    double dispServoUp = 0.8;
-    double dispServoDown = 0.1;
+    double dispServoUp = 0.0976;
+    double dispServoDown = 0.773;
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
     double intakeFlipServoUp = 0.92;
@@ -68,8 +68,6 @@ public class TileRunnerDepotAuto extends LinearOpMode {
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
-        intakeSpinServo = hardwareMap.get(Servo.class, "intake_spin_servo");
-
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -110,18 +108,17 @@ public class TileRunnerDepotAuto extends LinearOpMode {
 
         markerArm.setPosition(markerArmUp);
         dispServo.setPosition(dispServoDown);
-        intakeFlipServo.setPosition(intakeFlipServoUp);
 
         waitForStart();
 
         while (opModeIsActive()) {
             intakeFlipServo.setPosition(intakeFlipServoDown);
             //detach robot from lander
-            upMotor.setTargetPosition(currentUpPos + 1800);
-            downMotor.setTargetPosition(currentDownPos + 1800);
+            upMotor.setTargetPosition(currentUpPos + 1000);
+            downMotor.setTargetPosition(currentDownPos + 1000);
             upMotor.setPower(LiftPower);
             downMotor.setPower(LiftPower);
-            sleep(3000);
+            sleep(2200);
             dispServo.setPosition(dispServoUp);
 
             //move forward
@@ -132,34 +129,41 @@ public class TileRunnerDepotAuto extends LinearOpMode {
             telemetry.addData("X position" , detector.getXPosition()); // Gold X position.
             telemetry.update();
 
-            //check if mineral is in center position
-            if (100 < pos && pos < 350 && detector.isFound()) {
+            //check if mineral is in right position
+            if (pos > 350 && detector.isFound()) {
 
                 detector.disable();
-                mineralPos = "center";
+                mineralPos = "right";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
                 intakeFlipServo.setPosition(intakeFlipServoUp);
 
+                //turn right
+                encoderDrive(0.6, 16, -16,16, -16);
                 //move forward
-                encoderDrive(1, 77, 77, 77, 77);
+                encoderDrive(1, 80, 80, 80, 80);
+                //turn left
+                encoderDrive(0.6, -35, 35, -35, 35);
+                //move forward
+                encoderDrive(1, 40, 40, 40, 40);
                 //place marker
                 markerArm.setPosition(markerArmDown);
                 //move backward
-                encoderDrive(1, -60, -60, -60, -60);
+                encoderDrive(1, -10,-10,-10,-10);
                 //turn left
-                encoderDrive(0.6, -41, 41, -41, 41);
+                encoderDrive(0.6, -25, 25,-25, 25);
+                //move forward
+                encoderDrive(1, 32, 32, 32, 32);
+                //turn left
+                encoderDrive(0.6, -24,24,-24, 24);
                 //lift arm
                 markerArm.setPosition(markerArmUp);
                 //move forward
-                encoderDrive(0.6, 90, 90, 90, 90);
-                //turn left
-                encoderDrive(0.6, -31, 31, -31, 31);
-                //move forward
-                encoderDrive(1, 10, 10, 10, 100);
+                encoderDrive(1, 110, 110, 110, 110);
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }
+
             // check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
 
@@ -190,37 +194,31 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }
-            //go to right position
+            //go to center position
             else {
 
                 detector.disable();
-                mineralPos = "right";
+                mineralPos = "center";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
                 intakeFlipServo.setPosition(intakeFlipServoUp);
 
-                //turn right
-                encoderDrive(0.6, 16, -16,16, -16);
                 //move forward
-                encoderDrive(1, 80, 80, 80, 80);
-                //turn left
-                encoderDrive(0.6, -35, 35, -35, 35);
-                //move forward
-                encoderDrive(1, 40, 40, 40, 40);
+                encoderDrive(1, 77, 77, 77, 77);
                 //place marker
                 markerArm.setPosition(markerArmDown);
                 //move backward
-                encoderDrive(1, -10,-10,-10,-10);
+                encoderDrive(1, -60, -60, -60, -60);
                 //turn left
-                encoderDrive(0.6, -25, 25,-25, 25);
-                //move forward
-                encoderDrive(1, 30, 30, 30, 30);
-                //turn left
-                encoderDrive(0.6, -24,24,-24, 24);
+                encoderDrive(0.6, -41, 41, -41, 41);
                 //lift arm
                 markerArm.setPosition(markerArmUp);
                 //move forward
-                encoderDrive(1, 110, 110, 110, 110);
+                encoderDrive(0.6, 90, 90, 90, 90);
+                //turn left
+                encoderDrive(0.6, -31, 31, -31, 31);
+                //move forward
+                encoderDrive(1, 10, 10, 10, 10);
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }
@@ -229,7 +227,7 @@ public class TileRunnerDepotAuto extends LinearOpMode {
         }
     }
 
-    public void encoderDrive ( double speed, int flDrivePos, int frDrivePos, int rlDrivePos, int rrDrivePos) {
+        public void encoderDrive ( double speed, int flDrivePos, int frDrivePos, int rlDrivePos, int rrDrivePos) {
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -268,5 +266,5 @@ public class TileRunnerDepotAuto extends LinearOpMode {
         frDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
+  }
 }
