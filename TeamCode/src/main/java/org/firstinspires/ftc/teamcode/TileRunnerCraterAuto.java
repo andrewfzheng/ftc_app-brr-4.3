@@ -33,6 +33,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     Servo markerArm;
     Servo dispServo;
     Servo intakeFlipServo;
+    Servo dispExtensionServo;
 
     int LiftPower = 1;
     double pos = 0;
@@ -42,7 +43,8 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     double markerArmDown = 0.07;
     double intakeFlipServoUp = 0.92;
     double intakeFlipServoDown = 0.15;
-
+    double dispExtensionServoIn = 0.67;
+    double dispExtensionServoOut = 0.11;
 
 
     @Override
@@ -77,6 +79,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         downMotor = hardwareMap.get(DcMotor.class, "down_motor");
         markerArm = hardwareMap.get(Servo.class, "marker_servo");
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
+        dispExtensionServo = hardwareMap.get(Servo.class, "disp_extend_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -118,10 +121,12 @@ public class TileRunnerCraterAuto extends LinearOpMode {
 
         markerArm.setPosition(markerArmUp);
         dispServo.setPosition(dispServoDown);
+        dispExtensionServo.setPosition(dispExtensionServoIn);
 
         waitForStart();
 
         while (opModeIsActive()) {
+            dispExtensionServo.setPosition(dispExtensionServoOut);
             intakeFlipServo.setPosition(intakeFlipServoDown);
             //detach robot from lander
             upMotor.setTargetPosition(currentUpPos + 1000);
