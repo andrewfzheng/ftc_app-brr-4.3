@@ -91,6 +91,10 @@ public class TileRunnerTeleOp extends LinearOpMode {
         intakeSpinMotor.setDirection(DcMotor.Direction.FORWARD);
 
         //VARIABLES FOR HARDWARE
+        double intakeFlipServoUp = 0.80;
+        double intakeFlipServoMid = 0.70;
+        double intakeFlipServoDown = 0.06;
+
         double flDrivePower;
         double frDrivePower;
         double rlDrivePower;
@@ -117,12 +121,10 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isMarkerUp = true;
 
         int intakeFlipPos = 0;
-        double intakeFlipServoUp = 0.80;
-        double intakeFlipServoMid = 0.70;
-        double intakeFlipServoDown = 0.06;
         double intakeFlipTrueMid = 0.35;
 
         dispExtensionServo.setPosition(dispExtensionServoOut);
+        markerArm.setPosition(markerArmUp);
 
         // Wait for the game to begin
         telemetry.addData(">", "Press Play to start");

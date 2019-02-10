@@ -14,6 +14,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class TileRunnerCraterAuto extends LinearOpMode {
 
+    //VARIABLES FOR HARDWARE
+    double intakeFlipServoUp = 0.80;
+    double intakeFlipServoMid = 0.70;
+    double intakeFlipServoDown = 0.06;
+    int LiftPower = 1;
+    double pos = 0;
+    double dispServoUp = 0.0976;
+    double dispServoDown = 0.773;
+    double markerArmUp = 0.6;
+    double markerArmDown = 0.07;
+    double dispExtensionServoIn = 0.67;
+    double dispExtensionServoOut = 0.11;
+
     // Detector object
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
@@ -34,18 +47,6 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     Servo dispServo;
     Servo intakeFlipServo;
     Servo dispExtensionServo;
-
-    int LiftPower = 1;
-    double pos = 0;
-    double dispServoUp = 0.09765625;
-    double dispServoDown = 0.78296875;
-    double markerArmUp = 0.6;
-    double markerArmDown = 0.07;
-    double intakeFlipServoUp = 0.92;
-    double intakeFlipServoDown = 0.15;
-    double dispExtensionServoIn = 0.67;
-    double dispExtensionServoOut = 0.11;
-
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -122,6 +123,8 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         markerArm.setPosition(markerArmUp);
         dispServo.setPosition(dispServoDown);
         dispExtensionServo.setPosition(dispExtensionServoIn);
+        intakeFlipServo.setPosition(intakeFlipServoUp);
+
 
         waitForStart();
 
@@ -129,17 +132,16 @@ public class TileRunnerCraterAuto extends LinearOpMode {
             dispExtensionServo.setPosition(dispExtensionServoOut);
             intakeFlipServo.setPosition(intakeFlipServoDown);
             //detach robot from lander
-            upMotor.setTargetPosition(currentUpPos + 1000);
-            downMotor.setTargetPosition(currentDownPos + 1000);
+            upMotor.setTargetPosition(currentUpPos + 1300);
+            downMotor.setTargetPosition(currentDownPos + 1300);
             upMotor.setPower(LiftPower);
             downMotor.setPower(LiftPower);
-            sleep(2200);
+            sleep(3000);
 
             dispServo.setPosition(dispServoUp);
 
             //move forward
             encoderDrive(1, 8, 8, 8, 8);
-            //start vuforia
             pos = detector.getXPosition();
 
             telemetry.addData("X position" , detector.getXPosition()); // Gold X position.
