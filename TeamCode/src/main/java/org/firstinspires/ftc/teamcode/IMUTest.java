@@ -127,7 +127,7 @@ public class IMUTest extends LinearOpMode {
 
         globalHeading += deltaHeading;
 
-        //lastAngles = rawAngles;
+        lastAngles = rawAngles;
 
         return globalHeading;
     }
