@@ -91,9 +91,16 @@ public class IMUTest extends LinearOpMode {
         while (opModeIsActive()) {
             rawAngles = internal_imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //update IMU
             rawHeading = Float.parseFloat(formatAngle(rawAngles.angleUnit, rawAngles.firstAngle));
-            telemetry.addData("Heading Raw: ", rawHeading);
-            telemetry.addData("Heading Global: ", getGlobalHeading());
+
+            while (getGlobalHeading() < 30) {
+                telemetry.addData("Heading Raw: ", rawHeading);
+                telemetry.addData("Heading Global: ", getGlobalHeading());
+                telemetry.addLine("TURN MORE");
+                telemetry.update();
+            }
+            telemetry.addLine("DONE");
             telemetry.update();
+
             //EXTRAPOLATION OF ANGLES
 
         }
