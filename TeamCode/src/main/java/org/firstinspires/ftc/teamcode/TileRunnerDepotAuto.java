@@ -14,9 +14,10 @@ import com.vuforia.CameraDevice;
 public class TileRunnerDepotAuto extends LinearOpMode {
 
     //VARIABLES FOR HARDWARE
-    double intakeFlipServoUp = 0.80;
-    double intakeFlipServoMid = 0.70;
-    double intakeFlipServoDown = 0.06;
+    double intakeFlipServoUp = .92;
+    double intakeFlipServoMid = 0.61;
+    double intakeFlipServoDown = 0.15;
+
     int LiftPower = 1;
     double pos = 0;
     double dispServoUp = 0.0976;
@@ -167,13 +168,13 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //lift arm
                 markerArm.setPosition(markerArmUp);
                 //move forward
-                encoderDrive(1, 110, 110, 110, 110);
+                encoderDrive(1, 130, 130, 130, 130);
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }
 
             // check if mineral is in left position
-            else if (pos < 100 && detector.isFound()) {
+            else if (pos < 130 && detector.isFound()) {
 
                 detector.disable();
                 mineralPos = "left";
@@ -198,7 +199,7 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //lift arm
                 markerArm.setPosition(markerArmUp);
                 //move forward
-                encoderDrive(1,80, 80, 80, 80);
+                encoderDrive(1,110, 110, 110, 110);
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }
@@ -226,7 +227,7 @@ public class TileRunnerDepotAuto extends LinearOpMode {
                 //turn left
                 encoderDrive(0.6, -31, 31, -31, 31);
                 //move forward
-                encoderDrive(1, 10, 10, 10, 10);
+                encoderDrive(1, 30, 30, 30, 30);
                 //drop collector
                 intakeFlipServo.setPosition(intakeFlipServoMid);
             }

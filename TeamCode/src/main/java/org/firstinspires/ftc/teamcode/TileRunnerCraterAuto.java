@@ -15,9 +15,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class TileRunnerCraterAuto extends LinearOpMode {
 
     //VARIABLES FOR HARDWARE
-    double intakeFlipServoUp = 0.80;
-    double intakeFlipServoMid = 0.70;
-    double intakeFlipServoDown = 0.06;
+    double intakeFlipServoUp = .92;
+    double intakeFlipServoMid = 0.61;
+    double intakeFlipServoDown = 0.15;
+
     int LiftPower = 1;
     double pos = 0;
     double dispServoUp = 0.0976;
@@ -179,7 +180,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
                 encoderDrive(1, -140,-140,-140,-140);
             }
             //check if mineral is in left position
-            else if (pos < 100 && detector.isFound()) {
+            else if (pos < 130 && detector.isFound()) {
 
                 //turn off detector
                 detector.disable();

@@ -91,9 +91,9 @@ public class TileRunnerTeleOp extends LinearOpMode {
         intakeSpinMotor.setDirection(DcMotor.Direction.FORWARD);
 
         //VARIABLES FOR HARDWARE
-        double intakeFlipServoUp = 0.80;
-        double intakeFlipServoMid = 0.70;
-        double intakeFlipServoDown = 0.06;
+        double intakeFlipServoUp = .92;
+        double intakeFlipServoMid = 0.61;
+        double intakeFlipServoDown = 0.15;
 
         double flDrivePower;
         double frDrivePower;

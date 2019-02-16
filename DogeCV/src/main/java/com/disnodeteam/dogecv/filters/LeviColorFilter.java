@@ -93,7 +93,7 @@ public class LeviColorFilter extends DogeCVColorFilter {
             case YELLOW:
                 if(threshold == -1){
                     //old 50
-                    //today 70  fsau
+                    //today 70
                     threshold = 90;
                 }
 
