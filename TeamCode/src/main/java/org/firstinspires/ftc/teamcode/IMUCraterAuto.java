@@ -35,8 +35,6 @@ public class IMUCraterAuto extends LinearOpMode {
     private Servo dispServo;
     private Servo intakeFlipServo;
     private Servo dispExtensionServo;
-    private Servo sweepServo;
-
 
     // Variables for hardware
     double intakeFlipServoUp = .92;
@@ -106,7 +104,6 @@ public class IMUCraterAuto extends LinearOpMode {
         dispExtensionServo = hardwareMap.get(Servo.class, "disp_extend_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
         intakeSpinMotor = hardwareMap.get(DcMotor.class, "intake_spin_motor");
-        sweepServo = hardwareMap.get(Servo.class, "sweep_servo");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -151,7 +148,7 @@ public class IMUCraterAuto extends LinearOpMode {
         intakeFlipServo.setPosition(intakeFlipServoUp);
 
         // IMU gyro setup
-        telemetry.addData("IMU Status", "Waiting for IMU to Calibrate");
+        telemetry.addData(">", "WAIT FOR IMU TO CALIBRATE...");
         telemetry.update();
 
         // Setup for internal IMU data logging - do not touch
@@ -166,7 +163,7 @@ public class IMUCraterAuto extends LinearOpMode {
         internal_imu = hardwareMap.get(BNO055IMU.class, "internal_imu");
         internal_imu.initialize(parameters);
 
-        telemetry.addData("IMU Status", "IMU Calibrated - Press Play to start");
+        telemetry.addData(">", "IMU Calibrated: Press Play to start");
         resetGlobalHeading();
 
         telemetry.update();
@@ -175,22 +172,23 @@ public class IMUCraterAuto extends LinearOpMode {
 
         while (opModeIsActive()) {
             dispExtensionServo.setPosition(dispExtensionServoOut);
+            intakeFlipServo.setPosition(intakeFlipServoDown);
             // Detach robot from lander
             //upMotor.setTargetPosition(currentUpPos + 1300);
             //downMotor.setTargetPosition(currentDownPos + 1300);
             //upMotor.setPower(LiftPower);
             //downMotor.setPower(LiftPower);
             sleep(3000);
-            // Flip dispenser up
+
             dispServo.setPosition(dispServoUp);
+
             // Move forward
             encoderDrive(1, 8, 8, 8, 8);
-            // Flip intake down
-            intakeFlipServo.setPosition(intakeFlipServoDown);
-            // Get position of largest yellow object in camera FOV
             pos = detector.getXPosition();
+
             telemetry.addData("X position", detector.getXPosition()); // Gold X position.
             telemetry.update();
+
             // Check if mineral is in right position
             if (pos > 350 && detector.isFound()) {
                 // Turn off detector
@@ -198,256 +196,91 @@ public class IMUCraterAuto extends LinearOpMode {
                 mineralPos = "right";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
-                // Turn right
-                turnWithImu(13);
-                // Activate intake
+                //intakeFlipServo.setPosition(intakeFlipServoUp);
+                intakeFlipServo.setPosition(intakeFlipServoDown);
                 intakeSpinMotor.setPower(-1);
-                // Move forward
+                turnWithImu(13);
                 encoderDrive(1, 43, 43, 43, 43);
-                // move backward
                 encoderDrive(1, -42, -42, -42, -42);
-                // Stop intake
-                intakeSpinMotor.setPower(0);
-                // Turn left
                 turnWithImu(-50);
-                // Move forward
                 encoderDrive(1, 70, 70, 70, 70);
-                // Turn left
                 turnWithImu(-60);
-                // Move forward
+                //move forward
                 encoderDrive(1, 100, 100, 100, 100);
-                // Turn right
                 turnWithImu(6);
-                // Place marker
+                //place marker
                 markerArm.setPosition(markerArmDown);
-                // Move backward
+                //move backward
                 encoderDrive(1, -3, -3, -3, -3);
-                // Turn left
                 turnWithImu(-9);
-                // Move back
                 encoderDrive(0.6, -120, -120, -120, -120);
-                encoderDrive(1, -43, -43, -43, -43);
-
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 100) {
-
-                }
-                stopDrive();
-
-                encoderDrive(1, 75, 75, 75, 75);
-
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 40) {
-
-                }
-                stopDrive();
-
-                encoderDrive(1, 50, 50, 50, 50);
-
-                markerArm.setPosition(0.07);
-                //DRIVE TO CRATER PARK
-                encoderDrive(1, -120, -120, -120, -120);
             }
-            // Check if mineral is in left position
+            //check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
-                // Turn off detector
+                //turn off detector
                 detector.disable();
                 mineralPos = "left";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
-                // Turn left
-                turnWithImu(-11);
-                // Activate intake
+                //intakeFlipServo.setPosition(intakeFlipServoUp);
+                intakeFlipServo.setPosition(intakeFlipServoDown);
                 intakeSpinMotor.setPower(-1);
-                // Move forward
-                encoderDrive(1, 38, 38, 38, 38);
-                // Move backward
-                encoderDrive(1, -37, -37, -37, -37);
-                // Stop intake
-                intakeSpinMotor.setPower(0);
-                // Turn left
-                turnWithImu(-20);
-                // Move forward
-                encoderDrive(1, 70, 70, 70, 70);
-                turnWithImu(-53);
-                // Move forward
-                intakeFlipServo.setPosition(intakeFlipServoUp);
-
-                //turn left
                 resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 10) {
-
-                }
-                stopDrive();
+                // Turning left
+                turnWithImu(-11);
                 //move forward
                 encoderDrive(1, 38, 38, 38, 38);
                 //move backward
-                encoderDrive(1, -38, -38, -38, -38);
-                //turn left
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 20) {
-
-                }
-                stopDrive();
+                encoderDrive(1, -37, -37, -37, -37);
+                turnWithImu(-20);
                 //move forward
-                encoderDrive(1, 79, 79, 79, 79);
-                //turn left
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 54) {
-
-                }
-                stopDrive();
+                encoderDrive(1, 70, 70, 70, 70);
+                turnWithImu(-53);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 turnWithImu(6);
-                // Place marker
+                //place marker
                 markerArm.setPosition(markerArmDown);
-                // Move backward
-                encoderDrive(1, -3, -3, -3, -3);
-                // Turn left
-                turnWithImu(-9);
-                // Move backward
-                encoderDrive(0.6, -145, -145, -145, -145);
-                //turn left
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 1.5) {
-
-                }
-                stopDrive();
                 //move backward
-                encoderDrive(1, -145, -145, -145, -145);
-                sleep(300000);
+                encoderDrive(1, -3, -3, -3, -3);
+                turnWithImu(-9);
+                encoderDrive(0.6, -145, -145, -145, -145);
             }
-            // Go to center position
+            //go to center position
             else {
-                // Turn off detector
+                //turn off detector
                 detector.disable();
                 mineralPos = "center";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
-                // Lower mineral dispenser
-                //upMotor.setTargetPosition(currentUpPos - 1200);
-                //downMotor.setTargetPosition(currentDownPos - 1200);
-                //upMotor.setPower(-LiftPower);
-                //downMotor.setPower(-LiftPower);
-                //sleep(1000);
-                // Activate intake
-                intakeSpinMotor.setPower(-1);
-                // Move forward
-                encoderDrive(1, 30, 30, 30, 30);
-                sleep(3000);
-                // Lift intake and eject mineral
                 //intakeFlipServo.setPosition(intakeFlipServoUp);
-                // Move backward
-                encoderDrive(1, -29, -29, -29, -29);
-                // Stop intake
-                intakeSpinMotor.setPower(0);
-                // Lower intake
-                //intakeFlipServo.setPosition(intakeFlipServoDown);
-                // Raise mineral dispener
-                //upMotor.setTargetPosition(currentUpPos + 1300);
-                //downMotor.setTargetPosition(currentDownPos + 1300);
-                //upMotor.setPower(LiftPower);
-                //downMotor.setPower(LiftPower);
-                //sleep(3000);
-                // Activate sweeper
-                //sweepServo.setPosition(-1);
-                // Dispense mineral
-                //dispServo.setPosition(dispServoUp);
-                //sleep(1000);
-                // Lower dispenser
-                //dispServo.setPosition(dispServoDown);
-                // Turn left
-                turnWithImu(-35);
-                // Move forward
-                encoderDrive(1, 70, 70, 70, 70);
-                // Turn left
-                turnWithImu(-62);
-                // Move forward
-
-                /////SPIN INTAKE (it's already down)
-
+                intakeFlipServo.setPosition(intakeFlipServoDown);
+                intakeSpinMotor.setPower(-1);
                 //move forward
                 encoderDrive(1, 30, 30, 30, 30);
                 sleep(3000);
                 //move backward
-                encoderDrive(1, -30, -30, -30, -30);
+                encoderDrive(1, -29, -29, -29, -29);
 
-                //////STOP SPIN INTAKE
-                intakeFlipServo.setPosition(intakeFlipServoUp);
+                turnWithImu(-35);
 
-                runtime.reset();
-                //turn left
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 35) {
+                encoderDrive(1, 70, 70, 70, 70);
 
-                }
-                stopDrive();
-                //move forward
-                encoderDrive(1, 79, 79, 79, 79);
-                //turn left
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 65) {
+                turnWithImu(-62);
 
-                }
-                stopDrive();
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
-                // Turn right
+
                 turnWithImu(6);
-                // Place marker
+                //place marker
                 markerArm.setPosition(markerArmDown);
-                // Move backward
-                encoderDrive(1, -3, -3, -3, -3);
-                // Turn left
-                turnWithImu(-9);
-                // Move backward
-                encoderDrive(0.6, -140, -140, -140, -140);
-                resetGlobalHeading();
-                flDrive.setPower(-0.8);
-                rlDrive.setPower(-0.8);
-                frDrive.setPower(0.8);
-                rrDrive.setPower(0.8);
-                while (getGlobalHeading() < 1.5) {
-
-                }
-                stopDrive();
-
                 //move backward
-                encoderDrive(1, -140, -154, -140, -140);
+                encoderDrive(1, -3, -3, -3, -3);
+                turnWithImu(-9);
+                encoderDrive(0.6, -140, -140, -140, -140);
             }
+            detector.disable();
+            //wakeLock.release();
             sleep(300000);
         }
     }
@@ -510,8 +343,8 @@ public class IMUCraterAuto extends LinearOpMode {
         rawAngles = internal_imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //pull data for rawAngle
         lastHeading = -Float.parseFloat(formatAngle(lastAngles.angleUnit, lastAngles.firstAngle));
         rawHeading = -Float.parseFloat(formatAngle(rawAngles.angleUnit, rawAngles.firstAngle));
-        // Must reset angle every 360 degrees
-        // Positive to right, negative to left
+        //NEED TO RESET ANGLE EVERY 360!!!
+        //positive to left, negative to right
         float deltaHeading = rawHeading - lastHeading;
 
         if (deltaHeading < -180)
@@ -535,7 +368,7 @@ public class IMUCraterAuto extends LinearOpMode {
 
     public void turnWithImu(double degrees) {
         resetGlobalHeading();
-        // Turn left
+        // Turning left
         if (degrees < 0) {
             flDrive.setPower(-0.8);
             rlDrive.setPower(-0.8);
@@ -544,7 +377,7 @@ public class IMUCraterAuto extends LinearOpMode {
             while (getGlobalHeading() > degrees) {
             }
         }
-        // Turn right
+        // Turning right
         else {
             flDrive.setPower(0.8);
             rlDrive.setPower(0.8);
@@ -552,9 +385,10 @@ public class IMUCraterAuto extends LinearOpMode {
             rrDrive.setPower(-0.8);
             while (getGlobalHeading() < degrees) {
             }
-            //Stop all drive motors
+            //stop all drive motors
         }
         stopDrive();
+
     }
 }
 
