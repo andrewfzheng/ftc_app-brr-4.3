@@ -186,7 +186,7 @@ public class IMUCraterAuto extends LinearOpMode {
             telemetry.update();
 
             //check if mineral is in right position
-            if (pos > 350 && detector.isFound()) {
+            if (true) {
 
                 //turn off detector
                 detector.disable();
