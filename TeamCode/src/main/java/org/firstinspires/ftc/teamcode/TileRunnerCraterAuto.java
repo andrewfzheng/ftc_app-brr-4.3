@@ -14,40 +14,42 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class TileRunnerCraterAuto extends LinearOpMode {
 
-    //VARIABLES FOR HARDWARE
-    double intakeFlipServoUp = .92;
-    double intakeFlipServoMid = 0.61;
-    double intakeFlipServoDown = 0.15;
+    // Hardware declaration
+    private DcMotor upMotor;
+    private DcMotor downMotor;
+    private DcMotor flDrive;
+    private DcMotor frDrive;
+    private DcMotor rlDrive;
+    private DcMotor rrDrive;
+    private DcMotor intakeSpinMotor;
+    private Servo markerArm;
+    private Servo dispServo;
+    private Servo intakeFlipServo;
+    private Servo dispExtensionServo;
 
-    int LiftPower = 1;
-    double pos = 0;
-    double dispServoUp = 0.0976;
-    double dispServoDown = 0.773;
-    double markerArmUp = 0.6;
-    double markerArmDown = 0.07;
+    // Variables for hardware
+    double intakeFlipServoUp = .92;
+    double intakeFlipServoLowMid = 0.61;
+    double intakeFlipServoDown = 0.15;
+    double intakeFlipServoTrueMid = 0.35;
+
+    double dispServoUp = 0.094 ;
+    double dispServoDown = 0.80;
+
     double dispExtensionServoIn = 0.67;
     double dispExtensionServoOut = 0.11;
+
+    double markerArmUp = 0.6;
+    double markerArmDown = 0.07;
+
+    int LiftPower = 1;
+
+    double pos = 0;
 
     // Detector object
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     String mineralPos = "none";
-
-    //Setup  wakeLock
-    //Context context;
-    //PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-    //WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"TeamCode::WakeLockTag");
-
-    DcMotor upMotor;
-    DcMotor downMotor;
-    DcMotor flDrive;
-    DcMotor frDrive;
-    DcMotor rlDrive;
-    DcMotor rrDrive;
-    Servo markerArm;
-    Servo dispServo;
-    Servo intakeFlipServo;
-    Servo dispExtensionServo;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -83,6 +85,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
         dispServo = hardwareMap.get(Servo.class, "disp_servo");
         dispExtensionServo = hardwareMap.get(Servo.class, "disp_extend_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
+        intakeSpinMotor = hardwareMap.get(DcMotor.class, "intake_spin_motor");
 
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

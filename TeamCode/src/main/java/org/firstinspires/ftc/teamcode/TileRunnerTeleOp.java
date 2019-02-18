@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class TileRunnerTeleOp extends LinearOpMode {
 
-    //HARDWARE DECLARATION
+    // Hardware declaration
 
     private DcMotor flDrive;
     private DcMotor frDrive;
@@ -34,7 +34,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
 
     @Override public void runOpMode(){
 
-        //INIT HARDWARE
+        // Initialize Hardware
 
         flDrive = hardwareMap.get(DcMotor.class, "fl_drive");
         frDrive = hardwareMap.get(DcMotor.class, "fr_drive");
@@ -90,10 +90,12 @@ public class TileRunnerTeleOp extends LinearOpMode {
         inMotor.setDirection(DcMotor.Direction.FORWARD);
         intakeSpinMotor.setDirection(DcMotor.Direction.FORWARD);
 
-        //VARIABLES FOR HARDWARE
+        // Variables for hardware
         double intakeFlipServoUp = .92;
-        double intakeFlipServoMid = 0.61;
+        double intakeFlipServoLowMid = 0.61;
         double intakeFlipServoDown = 0.15;
+        double intakeFlipServoTrueMid = 0.35;
+
 
         double flDrivePower;
         double frDrivePower;
@@ -112,16 +114,13 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isDispServoReleased = true;
         boolean isDispServoUp = false;
 
-        double dispExtensionServoIn = 0.67;
         double dispExtensionServoOut = 0.11;
 
         double markerArmUp = 0.6;
-        double markerArmDown = 0.07;
-        boolean isMarkerReleased = true;
-        boolean isMarkerUp = true;
+
+        int LiftPower = 1;
 
         int intakeFlipPos = 0;
-        double intakeFlipTrueMid = 0.35;
 
         dispExtensionServo.setPosition(dispExtensionServoOut);
         markerArm.setPosition(markerArmUp);
@@ -207,14 +206,14 @@ public class TileRunnerTeleOp extends LinearOpMode {
             // vertical lift
             if (gamepad2.dpad_down) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                upMotor.setPower(-1); //negative value to move down
+                upMotor.setPower(-LiftPower); //negative value to move down
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                downMotor.setPower(-1); //negative value to move down
+                downMotor.setPower(-LiftPower); //negative value to move down
             } else if (gamepad2.dpad_up) {
                 upMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                upMotor.setPower(1); //positive value to move up
+                upMotor.setPower(LiftPower); //positive value to move up
                 downMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                downMotor.setPower(1); //positive value to move up
+                downMotor.setPower(LiftPower); //positive value to move up
             }
             else {
                 upMotor.setPower(0);
@@ -262,11 +261,11 @@ public class TileRunnerTeleOp extends LinearOpMode {
             if (intakeFlipPos == 0) {
                 intakeFlipServo.setPosition(intakeFlipServoDown);
             } else if (intakeFlipPos == 1) {
-                intakeFlipServo.setPosition(intakeFlipServoMid);
+                intakeFlipServo.setPosition(intakeFlipServoLowMid);
             } else if (intakeFlipPos == 2) {
                 intakeFlipServo.setPosition(intakeFlipServoUp);
             } else if (intakeFlipPos == 3) {
-                intakeFlipServo.setPosition(intakeFlipTrueMid);
+                intakeFlipServo.setPosition(intakeFlipServoTrueMid);
             }
 
             //horizontal intake retraction
