@@ -211,7 +211,7 @@ public class IMUCraterAuto extends LinearOpMode {
                     markerArm.setPosition(markerArmDown);
                     //move backward
                     encoderDrive(1, -3, -3, -3, -3);
-                    turnWithImu(-10);
+                    turnWithImu(-11);
                     encoderDrive(0.6, -120, -120, -120, -120);
             }
             //check if mineral is in left position
@@ -242,7 +242,7 @@ public class IMUCraterAuto extends LinearOpMode {
                 markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -3, -3, -3, -3);
-                turnWithImu(-9);
+                turnWithImu(-10);
                 encoderDrive(0.6, -145, -145, -145, -145);
             }
             //go to center position
