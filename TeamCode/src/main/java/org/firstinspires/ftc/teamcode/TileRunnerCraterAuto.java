@@ -30,7 +30,7 @@ public class TileRunnerCraterAuto extends LinearOpMode {
     // Variables for hardware
     double intakeFlipServoUp = .92;
     double intakeFlipServoLowMid = 0.61;
-    double intakeFlipServoDown = 0.15;
+    double intakeFlipServoDown = 0.07;
     double intakeFlipServoTrueMid = 0.35;
 
     double dispServoUp = 0.094 ;

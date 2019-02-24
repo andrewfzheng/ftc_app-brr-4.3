@@ -94,7 +94,7 @@ public class LeviColorFilter extends DogeCVColorFilter {
                 if(threshold == -1){
                     //old 50
                     //room 70
-                    threshold = 70;
+                    threshold = 60;
                 }
 
                 Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2YUV);

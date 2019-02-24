@@ -7,21 +7,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.CameraDevice;
 
 @Autonomous(name="TileRunnerDepotAuto", group="DogeCV")
 
 public class TileRunnerDepotAuto extends LinearOpMode {
 
     //VARIABLES FOR HARDWARE
-    double intakeFlipServoUp = .92;
+    double intakeFlipServoUp = .85;
     double intakeFlipServoMid = 0.61;
     double intakeFlipServoDown = 0.15;
 
     int LiftPower = 1;
     double pos = 0;
     double dispServoUp = 0.0976;
-    double dispServoDown = 0.773;
+    double dispServoDown = .75;
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
     double dispExtensionServoIn = 0.67;

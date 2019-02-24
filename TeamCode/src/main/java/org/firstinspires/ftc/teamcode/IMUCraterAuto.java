@@ -39,7 +39,7 @@ public class IMUCraterAuto extends LinearOpMode {
     // Variables for hardware
     double intakeFlipServoUp = .92;
     double intakeFlipServoLowMid = 0.61;
-    double intakeFlipServoDown = 0.15;
+    double intakeFlipServoDown = 0.09;
     double intakeFlipServoTrueMid = 0.35;
 
     double dispServoUp = 0.094 ;
@@ -174,10 +174,10 @@ public class IMUCraterAuto extends LinearOpMode {
             dispExtensionServo.setPosition(dispExtensionServoOut);
             intakeFlipServo.setPosition(intakeFlipServoDown);
             // Detach robot from lander
-            //upMotor.setTargetPosition(currentUpPos + 1300);
-            //downMotor.setTargetPosition(currentDownPos + 1300);
-            //upMotor.setPower(LiftPower);
-            //downMotor.setPower(LiftPower);
+//            upMotor.setTargetPosition(currentUpPos + 1300);
+//            downMotor.setTargetPosition(currentDownPos + 1300);
+//            upMotor.setPower(LiftPower);
+//            downMotor.setPower(LiftPower);
 
             dispServo.setPosition(dispServoUp);
 
@@ -188,31 +188,40 @@ public class IMUCraterAuto extends LinearOpMode {
             telemetry.addData("X position", detector.getXPosition()); // Gold X position.
             telemetry.update();
 
+            sleep(100);
+
             // Check if mineral is in right position
             if (pos > 350 && detector.isFound()) {
-                    // Turn off detector
-                    detector.disable();
-                    mineralPos = "right";
-                    telemetry.addData("Mineral position", mineralPos);
-                    telemetry.update();
-                    //intakeFlipServo.setPosition(intakeFlipServoUp);
-                    intakeFlipServo.setPosition(intakeFlipServoDown);
-                    intakeSpinMotor.setPower(-1);
-                    turnWithImu(15);
-                    encoderDrive(1, 41, 41, 41, 41);
-                    encoderDrive(1, -40, -40, -40, -40);
-                    turnWithImu(-56);
-                    encoderDrive(1, 74, 74, 74, 74);
-                    turnWithImu(-63);
-                    //move forward
-                    encoderDrive(1, 100, 100, 100, 100);
-                    turnWithImu(6);
-                    //place marker
-                    markerArm.setPosition(markerArmDown);
-                    //move backward
-                    encoderDrive(1, -3, -3, -3, -3);
-                    turnWithImu(-11);
-                    encoderDrive(0.6, -120, -120, -120, -120);
+                // Turn off detector
+                detector.disable();
+                mineralPos = "right";
+                telemetry.addData("Mineral position", mineralPos);
+                telemetry.update();
+                dispServo.setPosition(dispServoDown);
+                // Lower dispenser
+//                upMotor.setTargetPosition(currentUpPos - 1250);
+//                downMotor.setTargetPosition(currentDownPos - 1250);
+//                upMotor.setPower(-LiftPower);
+//                downMotor.setPower(-LiftPower);
+                intakeFlipServo.setPosition(intakeFlipServoDown);
+                intakeSpinMotor.setPower(1);
+                turnWithImu(17);
+                encoderDrive(1, 41, 41, 41, 41);
+                encoderDrive(1, -40, -40, -40, -40);
+                intakeSpinMotor.setPower(0);
+                intakeFlipServo.setPosition(intakeFlipServoUp);
+                turnWithImu(-58);
+                encoderDrive(1, 74, 74, 74, 74);
+                turnWithImu(-64);
+                //move forward
+                encoderDrive(1, 100, 100, 100, 100);
+                turnWithImu(6);
+                //place marker
+                markerArm.setPosition(markerArmDown);
+                //move backward
+                encoderDrive(1, -3, -3, -3, -3);
+                turnWithImu(-11);
+                encoderDrive(0.6, -120, -120, -120, -120);
             }
             //check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
@@ -221,17 +230,24 @@ public class IMUCraterAuto extends LinearOpMode {
                 mineralPos = "left";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
-                //intakeFlipServo.setPosition(intakeFlipServoUp);
+                dispServo.setPosition(dispServoDown);
+                // Lower dispenser
+//                upMotor.setTargetPosition(currentUpPos - 1250);
+//                downMotor.setTargetPosition(currentDownPos - 1250);
+//                upMotor.setPower(-LiftPower);
+//                downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
-                intakeSpinMotor.setPower(-1);
+                intakeSpinMotor.setPower(1);
                 resetGlobalHeading();
                 // Turning left
-                turnWithImu(-11);
+                turnWithImu(-13);
                 //move forward
                 encoderDrive(1, 38, 38, 38, 38);
                 //move backward
                 encoderDrive(1, -37, -37, -37, -37);
-                turnWithImu(-20);
+                intakeSpinMotor.setPower(0);
+                intakeFlipServo.setPosition(intakeFlipServoUp);
+                turnWithImu(-18);
                 //move forward
                 encoderDrive(1, 73, 73, 73, 73);
                 turnWithImu(-55);
@@ -252,14 +268,21 @@ public class IMUCraterAuto extends LinearOpMode {
                 mineralPos = "center";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
-                //intakeFlipServo.setPosition(intakeFlipServoUp);
+                dispServo.setPosition(dispServoDown);
+                // Lower dispenser
+//                upMotor.setTargetPosition(currentUpPos - 1250);
+//                downMotor.setTargetPosition(currentDownPos - 1250);
+//                upMotor.setPower(-LiftPower);
+//                downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
-                intakeSpinMotor.setPower(-1);
+                intakeSpinMotor.setPower(1);
                 //move forward
                 encoderDrive(1, 30, 30, 30, 30);
                 sleep(3000);
                 //move backward
                 encoderDrive(1, -29, -29, -29, -29);
+                intakeSpinMotor.setPower(0);
+                intakeFlipServo.setPosition(intakeFlipServoUp);
 
                 turnWithImu(-35);
 

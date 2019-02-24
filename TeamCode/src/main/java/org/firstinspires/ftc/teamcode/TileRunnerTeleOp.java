@@ -91,9 +91,9 @@ public class TileRunnerTeleOp extends LinearOpMode {
         intakeSpinMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Variables for hardware
-        double intakeFlipServoUp = .92;
-        double intakeFlipServoLowMid = 0.61;
-        double intakeFlipServoDown = 0.15;
+        double intakeFlipServoUp = .85;
+        double intakeFlipServoLowMid = .35;
+        double intakeFlipServoDown = 0.09;
         double intakeFlipServoTrueMid = 0.35;
 
 
@@ -284,12 +284,12 @@ public class TileRunnerTeleOp extends LinearOpMode {
             //activate collector only if bumpers are pressed
             if (gamepad2.left_bumper) {
                 intakeSpinMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                intakeSpinMotor.setPower(1);
+                intakeSpinMotor.setPower(-1);
             }
             //activate collector only if bumpers are pressed
             else if (gamepad2.right_bumper) {
                 intakeSpinMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                intakeSpinMotor.setPower(-1);
+                intakeSpinMotor.setPower(1);
             }
             //stop intake
             else {
