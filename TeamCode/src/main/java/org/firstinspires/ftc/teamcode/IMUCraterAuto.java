@@ -39,7 +39,7 @@ public class IMUCraterAuto extends LinearOpMode {
     // Variables for hardware
     double intakeFlipServoUp = .92;
     double intakeFlipServoLowMid = 0.61;
-    double intakeFlipServoDown = 0.09;
+    double intakeFlipServoDown = 0.10;
     double intakeFlipServoTrueMid = 0.35;
 
     double dispServoUp = 0.094 ;
@@ -172,14 +172,16 @@ public class IMUCraterAuto extends LinearOpMode {
 
         while (opModeIsActive()) {
             dispExtensionServo.setPosition(dispExtensionServoOut);
-            intakeFlipServo.setPosition(intakeFlipServoDown);
+            intakeFlipServo.setPosition(intakeFlipServoTrueMid);
             // Detach robot from lander
-//            upMotor.setTargetPosition(currentUpPos + 1300);
-//            downMotor.setTargetPosition(currentDownPos + 1300);
-//            upMotor.setPower(LiftPower);
-//            downMotor.setPower(LiftPower);
-
+            upMotor.setTargetPosition(currentUpPos + 1300);
+            downMotor.setTargetPosition(currentDownPos + 1300);
+            upMotor.setPower(LiftPower);
+            downMotor.setPower(LiftPower);
+            sleep(3000);
             dispServo.setPosition(dispServoUp);
+            intakeFlipServo.setPosition(intakeFlipServoDown);
+
 
             // Move forward
             encoderDrive(1, 8, 8, 8, 8);
@@ -199,10 +201,10 @@ public class IMUCraterAuto extends LinearOpMode {
                 telemetry.update();
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-//                upMotor.setTargetPosition(currentUpPos - 1250);
-//                downMotor.setTargetPosition(currentDownPos - 1250);
-//                upMotor.setPower(-LiftPower);
-//                downMotor.setPower(-LiftPower);
+                upMotor.setTargetPosition(currentUpPos - 1250);
+                downMotor.setTargetPosition(currentDownPos - 1250);
+                upMotor.setPower(-LiftPower);
+                downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
                 intakeSpinMotor.setPower(1);
                 turnWithImu(17);
@@ -232,10 +234,10 @@ public class IMUCraterAuto extends LinearOpMode {
                 telemetry.update();
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-//                upMotor.setTargetPosition(currentUpPos - 1250);
-//                downMotor.setTargetPosition(currentDownPos - 1250);
-//                upMotor.setPower(-LiftPower);
-//                downMotor.setPower(-LiftPower);
+                upMotor.setTargetPosition(currentUpPos - 1250);
+                downMotor.setTargetPosition(currentDownPos - 1250);
+                upMotor.setPower(-LiftPower);
+                downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
                 intakeSpinMotor.setPower(1);
                 resetGlobalHeading();
@@ -270,10 +272,10 @@ public class IMUCraterAuto extends LinearOpMode {
                 telemetry.update();
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-//                upMotor.setTargetPosition(currentUpPos - 1250);
-//                downMotor.setTargetPosition(currentDownPos - 1250);
-//                upMotor.setPower(-LiftPower);
-//                downMotor.setPower(-LiftPower);
+                upMotor.setTargetPosition(currentUpPos - 1250);
+                downMotor.setTargetPosition(currentDownPos - 1250);
+                upMotor.setPower(-LiftPower);
+                downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
                 intakeSpinMotor.setPower(1);
                 //move forward

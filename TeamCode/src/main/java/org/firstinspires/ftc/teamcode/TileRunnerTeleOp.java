@@ -93,7 +93,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         // Variables for hardware
         double intakeFlipServoUp = .85;
         double intakeFlipServoLowMid = .35;
-        double intakeFlipServoDown = 0.09;
+        double intakeFlipServoDown = 0.10;
         double intakeFlipServoTrueMid = 0.35;
 
 
