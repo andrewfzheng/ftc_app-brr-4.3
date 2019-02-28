@@ -286,11 +286,11 @@ public class IMUCraterAuto extends LinearOpMode {
                 intakeSpinMotor.setPower(0);
                 intakeFlipServo.setPosition(intakeFlipServoUp);
 
-                turnWithImu(-40);
+                turnWithImu(-44);
 
                 encoderDrive(1, 65, 65, 65, 65);
 
-                turnWithImu(-64);
+                turnWithImu(-62);
 
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
