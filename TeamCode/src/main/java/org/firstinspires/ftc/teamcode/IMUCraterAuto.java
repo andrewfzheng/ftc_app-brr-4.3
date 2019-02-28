@@ -208,13 +208,13 @@ public class IMUCraterAuto extends LinearOpMode {
                 intakeFlipServo.setPosition(intakeFlipServoDown);
                 intakeSpinMotor.setPower(1);
                 turnWithImu(18);
-                encoderDrive(.6, 41, 41, 41, 41);
-                encoderDrive(1, -40, -40, -40, -40);
+                encoderDrive(.6, 40, 40, 40, 41);
+                encoderDrive(1, -39, -39, -39, -39);
                 intakeSpinMotor.setPower(0);
                 intakeFlipServo.setPosition(intakeFlipServoUp);
-                turnWithImu(-67);
-                encoderDrive(1, 60, 60, 60, 60);
-                turnWithImu(-64);
+                turnWithImu(-70);
+                encoderDrive(1, 73, 73, 73, 73);
+                turnWithImu(-61);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 turnWithImu(6);
@@ -222,8 +222,8 @@ public class IMUCraterAuto extends LinearOpMode {
                 markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -3, -3, -3, -3);
-                turnWithImu(-11);
-                encoderDrive(0.6, -120, -120, -120, -120);
+                turnWithImu(-14);
+                encoderDrive(0.6, -130, -130, -130, -130);
             }
             //check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
@@ -251,8 +251,8 @@ public class IMUCraterAuto extends LinearOpMode {
                 intakeFlipServo.setPosition(intakeFlipServoUp);
                 turnWithImu(-24);
                 //move forward
-                encoderDrive(1, 60, 60, 60, 60);
-                turnWithImu(-66);
+                encoderDrive(1, 77, 77, 77, 77);
+                turnWithImu(-53);
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 turnWithImu(6);
@@ -260,7 +260,7 @@ public class IMUCraterAuto extends LinearOpMode {
                 markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -3, -3, -3, -3);
-                turnWithImu(-10);
+                turnWithImu(-9);
                 encoderDrive(0.6, -145, -145, -145, -145);
             }
             //go to center position
@@ -288,9 +288,9 @@ public class IMUCraterAuto extends LinearOpMode {
 
                 turnWithImu(-44);
 
-                encoderDrive(1, 65, 65, 65, 65);
+                encoderDrive(1, 75, 75, 75, 75);
 
-                turnWithImu(-62);
+                turnWithImu(-59);
 
                 //move forward
                 encoderDrive(1, 100, 100, 100, 100);
@@ -300,7 +300,7 @@ public class IMUCraterAuto extends LinearOpMode {
                 markerArm.setPosition(markerArmDown);
                 //move backward
                 encoderDrive(1, -3, -3, -3, -3);
-                turnWithImu(-14);
+                turnWithImu(-10);
                 encoderDrive(0.6, -140, -140, -140, -140);
             }
             detector.disable();
