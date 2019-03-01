@@ -18,10 +18,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
-@Autonomous(name = "IMUDepotAuto", group = "DogeCV")
+@Autonomous(name = "Test_IMUDepotAuto", group = "DogeCV")
 
 
-public class IMUDepotAuto extends LinearOpMode {
+public class Test_IMUDepotAuto extends LinearOpMode {
 
     // Hardware declaration
     private DcMotor upMotor;
@@ -42,7 +42,7 @@ public class IMUDepotAuto extends LinearOpMode {
     double intakeFlipServoDown = 0.11;
     double intakeFlipServoTrueMid = 0.35;
 
-    double dispServoUp = 0.094 ;
+    double dispServoUp = 0.094;
     double dispServoDown = 0.80;
 
     double dispExtensionServoIn = 0.67;
@@ -69,7 +69,6 @@ public class IMUDepotAuto extends LinearOpMode {
     float rawHeading;
     float lastHeading;
     float globalHeading;
-
 
 
     @Override
@@ -182,7 +181,6 @@ public class IMUDepotAuto extends LinearOpMode {
             intakeFlipServo.setPosition(intakeFlipServoDown);
 
 
-
             dispServo.setPosition(dispServoUp);
 
             // Move forward
@@ -207,25 +205,26 @@ public class IMUDepotAuto extends LinearOpMode {
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
-                turnWithImu(19);
+                turnWithImu(36);
                 intakeSpinMotor.setPower(1);
                 encoderDrive(1, 41, 41, 41, 41);
                 intakeSpinMotor.setPower(0);
-                  intakeFlipServo.setPosition(intakeFlipServoUp);
+                intakeFlipServo.setPosition(intakeFlipServoUp);
                 //move forward
 
                 encoderDrive(1, 30, 30, 30, 30);
-                turnWithImu(-40);
-                encoderDrive(1,20,20,20,20);
+                turnWithImu(-67);
+                encoderDrive(1, 20, 20, 20, 20);
                 //place marker
                 markerArm.setPosition(markerArmDown);
                 sleep(1000); //wait for marker to fall down
                 markerArm.setPosition(markerArmUp);
-                encoderDrive(1,-60,-60,-60,-60);
-                turnWithImu(-55);
-                encoderDrive(0.6, 140, 140, 140, 140);//drive back to starting point
-                turnWithImu(-15);
+                encoderDrive(1, -60, -60, -60, -60);
+                turnWithImu(-72);
+                encoderDrive(0.6, 150, 150, 150, 150);//drive back to starting point
+                turnWithImu(-32);
                 encoderDrive(0.6, 30, 30, 30, 30);//drive back to starting point
+                intakeFlipServo.setPosition(intakeFlipServoTrueMid);
 
             }
             //check if mineral is in left position
@@ -242,20 +241,21 @@ public class IMUDepotAuto extends LinearOpMode {
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
                 intakeFlipServo.setPosition(intakeFlipServoDown);
-                turnWithImu(-15);
+                turnWithImu(-32);
                 intakeSpinMotor.setPower(1);
                 encoderDrive(.6, 55, 55, 55, 55);
                 intakeSpinMotor.setPower(0);
                 intakeFlipServo.setPosition(intakeFlipServoUp);
-                turnWithImu(30);
-                encoderDrive(1, 57, 57, 57, 57);
-                turnWithImu(10);
+                turnWithImu(46);
+                encoderDrive(1, 60, 60, 60, 60);
+                turnWithImu(26);
                 markerArm.setPosition(markerArmDown);
                 turnWithImu(170);
                 encoderDrive(.6, 100, 100, 100, 100);
                 markerArm.setPosition(markerArmUp);
-                turnWithImu(30);
-                encoderDrive(.6, 55, 55, 55, 55);
+                turnWithImu(47);
+                encoderDrive(.6, 60, 60, 60, 60);
+                intakeFlipServo.setPosition(intakeFlipServoTrueMid);
 
             }
             //go to center position
@@ -275,7 +275,7 @@ public class IMUDepotAuto extends LinearOpMode {
                 intakeSpinMotor.setPower(1);
                 //move forward
                 encoderDrive(1, 30, 30, 30, 30);
-                encoderDrive(1, 40, 40 ,40, 40);
+                encoderDrive(1, 40, 40, 40, 40);
                 //place marker
                 intakeSpinMotor.setPower(0);
                 intakeFlipServo.setPosition(intakeFlipServoUp);
@@ -283,9 +283,9 @@ public class IMUDepotAuto extends LinearOpMode {
                 sleep(1000);//for markerarm to have enuf time to drop
                 markerArm.setPosition(markerArmUp);
                 encoderDrive(1, -70, -70, -70, -70);
-                turnWithImu(-39);
+                turnWithImu(-55);
                 encoderDrive(1, 65, 65, 65, 65);
-                turnWithImu(-50);
+                turnWithImu(-70);
                 encoderDrive(0.6, 60, 60, 60, 60);
 
             }
@@ -380,22 +380,51 @@ public class IMUDepotAuto extends LinearOpMode {
         resetGlobalHeading();
         // Turning left
         if (degrees < 0) {
-            flDrive.setPower(-0.8);
+            flDrive.setPower(-0.8); //init turn, QUICKLY
             rlDrive.setPower(-0.8);
             frDrive.setPower(0.8);
             rrDrive.setPower(0.8);
             while (getGlobalHeading() > degrees) {
             }
+            if (getGlobalHeading() != degrees) { //final adjustment, SLOWLY
+                if (getGlobalHeading() > degrees) {
+                    flDrive.setPower(-0.1);
+                    rlDrive.setPower(-0.1);
+                    frDrive.setPower(0.1);
+                    rrDrive.setPower(0.1);
+                    while (getGlobalHeading() > degrees) ;
+                } else if (getGlobalHeading() < degrees) {
+                    flDrive.setPower(0.1);
+                    rlDrive.setPower(0.1);
+                    frDrive.setPower(-0.1);
+                    rrDrive.setPower(-0.1);
+                    while (getGlobalHeading() < degrees) ;
+                }
+            }
         }
         // Turning right
-        else {
-            flDrive.setPower(0.8);
+        else if (degrees > 0) {
+            flDrive.setPower(0.8); //init turn, QUICKLY
             rlDrive.setPower(0.8);
             frDrive.setPower(-0.8);
             rrDrive.setPower(-0.8);
             while (getGlobalHeading() < degrees) {
             }
-            //stop all drive motors
+            if (getGlobalHeading() != degrees) { //final adjustment, SLOWLY
+                if (getGlobalHeading() > degrees) {
+                    flDrive.setPower(-0.2);
+                    rlDrive.setPower(-0.2);
+                    frDrive.setPower(0.2);
+                    rrDrive.setPower(0.2);
+                    while (getGlobalHeading() > degrees) ;
+                } else if (getGlobalHeading() < degrees) {
+                    flDrive.setPower(0.2);
+                    rlDrive.setPower(0.2);
+                    frDrive.setPower(-0.2);
+                    rrDrive.setPower(-0.2);
+                    while (getGlobalHeading() < degrees) ;
+                }
+            }
         }
         stopDrive();
 
