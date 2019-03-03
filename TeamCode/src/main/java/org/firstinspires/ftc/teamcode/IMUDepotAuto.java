@@ -20,9 +20,7 @@ import java.util.Locale;
 
 @Autonomous(name = "IMUDepotAuto", group = "DogeCV")
 
-
 public class IMUDepotAuto extends LinearOpMode {
-
     // Hardware declaration
     private DcMotor upMotor;
     private DcMotor downMotor;
@@ -30,69 +28,53 @@ public class IMUDepotAuto extends LinearOpMode {
     private DcMotor frDrive;
     private DcMotor rlDrive;
     private DcMotor rrDrive;
+    private DcMotor inMotor;
     private DcMotor intakeSpinMotor;
     private Servo markerArm;
     private Servo dispServo;
     private Servo intakeFlipServo;
     private Servo dispExtensionServo;
-
     // Variables for hardware
     double intakeFlipServoUp = .92;
-    double intakeFlipServoLowMid = 0.61;
     double intakeFlipServoDown = 0.11;
-    double intakeFlipServoTrueMid = 0.35;
-
     double dispServoUp = 0.094 ;
     double dispServoDown = 0.80;
-
     double dispExtensionServoIn = 0.67;
     double dispExtensionServoOut = 0.11;
-
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
-
     int LiftPower = 1;
-
     double pos = 0;
-
     // Detector object
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     String mineralPos = "none";
-
-    // Imu setup
+    // REV Expansion Hub IMU setup
     BNO055IMU internal_imu;
     Orientation rawAngles;
     Orientation lastAngles;
-
-    // Imu variables
+    // Variables for IMU
     float rawHeading;
     float lastHeading;
     float globalHeading;
 
-
-
     @Override
     public void runOpMode() throws InterruptedException {
-
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
         detector.useDefaults(); // Set detector to use default settings
-
         // Optional tuning
         detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
         detector.alignPosOffset = 0; // How far from center frame to offset this alignment zone.
         detector.downscale = 0.4; // How much to downscale the input frames
-
         detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
         //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
         detector.maxAreaScorer.weight = 0.005; //
-
         detector.ratioScorer.weight = 5; //
         detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
         detector.enable();
-
+        // Initialize hardware
         flDrive = hardwareMap.get(DcMotor.class, "fl_drive");
         frDrive = hardwareMap.get(DcMotor.class, "fr_drive");
         rlDrive = hardwareMap.get(DcMotor.class, "rl_drive");
@@ -104,53 +86,54 @@ public class IMUDepotAuto extends LinearOpMode {
         dispExtensionServo = hardwareMap.get(Servo.class, "disp_extend_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
         intakeSpinMotor = hardwareMap.get(DcMotor.class, "intake_spin_motor");
-
+        // Reset motor encoders
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         downMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        // Set motor behavior when running
         flDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         upMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         downMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        // Set behavior of all motors when power received is zero
         flDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         downMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        // Set directions of all motors
         flDrive.setDirection(DcMotor.Direction.FORWARD);
         frDrive.setDirection(DcMotor.Direction.REVERSE);
         rlDrive.setDirection(DcMotor.Direction.FORWARD);
         rrDrive.setDirection(DcMotor.Direction.REVERSE);
         upMotor.setDirection(DcMotor.Direction.FORWARD);
         downMotor.setDirection(DcMotor.Direction.REVERSE);
-
+        // Set position value of vertical lift motors to current position
         int currentUpPos = upMotor.getCurrentPosition();
         int currentDownPos = downMotor.getCurrentPosition();
-
+        // Set target position of vertical lift motors to current position
         upMotor.setTargetPosition(currentUpPos);
         downMotor.setTargetPosition(currentDownPos);
-
+        // Turn on vertical lift motors to hang
         upMotor.setPower(LiftPower);
         downMotor.setPower(LiftPower);
-
+        // Flip marker arm up
         markerArm.setPosition(markerArmUp);
+        // Flip dispenser down
         dispServo.setPosition(dispServoDown);
+        // Retract crater-side extension flap
         dispExtensionServo.setPosition(dispExtensionServoIn);
+        // Flip intake up
         intakeFlipServo.setPosition(intakeFlipServoUp);
-
         // IMU gyro setup
         telemetry.addData(">", "WAIT FOR IMU TO CALIBRATE...");
         telemetry.update();
-
         // Setup for internal IMU data logging - do not touch
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -158,41 +141,35 @@ public class IMUDepotAuto extends LinearOpMode {
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
         // Initialize hardware
         internal_imu = hardwareMap.get(BNO055IMU.class, "internal_imu");
         internal_imu.initialize(parameters);
-
         telemetry.addData(">", "IMU Calibrated: Press Play to start");
         resetGlobalHeading();
-
         telemetry.update();
 
         waitForStart();
 
         while (opModeIsActive()) {
-            intakeFlipServo.setPosition(intakeFlipServoDown);
+            // Extend crate-side dispenser flap
             dispExtensionServo.setPosition(dispExtensionServoOut);
-            // Detach robot from lander
+            // Flip intake down
+            intakeFlipServo.setPosition(intakeFlipServoDown);
+            // Lower robot from lander
             upMotor.setTargetPosition(currentUpPos + 1300);
             downMotor.setTargetPosition(currentDownPos + 1300);
             upMotor.setPower(LiftPower);
             downMotor.setPower(LiftPower);
             sleep(3000);
-            intakeFlipServo.setPosition(intakeFlipServoDown);
-
-
-
+            // Flip dispenser up
             dispServo.setPosition(dispServoUp);
-
             // Move forward
             encoderDrive(1, 8, 8, 8, 8);
+            // Get x position of gold mineral
             pos = detector.getXPosition();
-
-            telemetry.addData("X position", detector.getXPosition()); // Gold X position.
+            telemetry.addData("X position", detector.getXPosition());
             telemetry.update();
             sleep(100);
-
             // Check if mineral is in right position
             if (pos > 350 && detector.isFound()) {
                 // Turn off detector
@@ -200,97 +177,131 @@ public class IMUDepotAuto extends LinearOpMode {
                 mineralPos = "right";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
+                // FLip dispenser down
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-                upMotor.setTargetPosition(currentUpPos - 1200);
-                downMotor.setTargetPosition(currentDownPos - 1200);
+                upMotor.setTargetPosition(currentUpPos - 1100);
+                downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
-                intakeFlipServo.setPosition(intakeFlipServoDown);
+                // Turn right
                 turnWithImu(19);
+                // Turn intake on
                 intakeSpinMotor.setPower(1);
+                // Move forward
                 encoderDrive(1, 41, 41, 41, 41);
+                // Turn intake off
                 intakeSpinMotor.setPower(0);
-                  intakeFlipServo.setPosition(intakeFlipServoUp);
-                //move forward
-
+                // Flip intake up
+                intakeFlipServo.setPosition(intakeFlipServoUp);
+                // Move forward
                 encoderDrive(1, 30, 30, 30, 30);
+                // Turn left
                 turnWithImu(-40);
+                // Move forward
                 encoderDrive(1,20,20,20,20);
-                //place marker
+                // Place marker
                 markerArm.setPosition(markerArmDown);
-                sleep(1000); //wait for marker to fall down
+                // Wait for marker to fall down
+                sleep(1000);
+                // Flip marker arm up
                 markerArm.setPosition(markerArmUp);
+                // Move backward
                 encoderDrive(1,-60,-60,-60,-60);
+                // Turn left
                 turnWithImu(-55);
-                encoderDrive(0.6, 140, 140, 140, 140);//drive back to starting point
+                // Move forward
+                encoderDrive(0.6, 140, 140, 140, 140);
+                // Turn left
                 turnWithImu(-15);
-                encoderDrive(0.6, 30, 30, 30, 30);//drive back to starting point
-
+                // Move forward
+                encoderDrive(0.6, 30, 30, 30, 30);
             }
-            //check if mineral is in left position
+            //Check if mineral is in left position
             else if (pos < 100 && detector.isFound()) {
-                //turn off detector
+                // Turn off detector
                 detector.disable();
                 mineralPos = "left";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-                upMotor.setTargetPosition(currentUpPos - 1200);
-                downMotor.setTargetPosition(currentDownPos - 1200);
+                upMotor.setTargetPosition(currentUpPos - 1100);
+                downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
-                intakeFlipServo.setPosition(intakeFlipServoDown);
+                // Turn left
                 turnWithImu(-15);
+                // Turn intake on
                 intakeSpinMotor.setPower(1);
+                // Move forward
                 encoderDrive(.6, 55, 55, 55, 55);
+                // Turn intake off
                 intakeSpinMotor.setPower(0);
+                // Flip intake up
                 intakeFlipServo.setPosition(intakeFlipServoUp);
+                // Turn right
                 turnWithImu(30);
+                // Move forward
                 encoderDrive(1, 57, 57, 57, 57);
+                // Turn right
                 turnWithImu(10);
+                // Place marker
                 markerArm.setPosition(markerArmDown);
+                // Turn right
                 turnWithImu(170);
+                // Move forward
                 encoderDrive(.6, 100, 100, 100, 100);
+                // Flip marker arm up
                 markerArm.setPosition(markerArmUp);
+                // Turn right
                 turnWithImu(30);
+                // Move forward
                 encoderDrive(.6, 55, 55, 55, 55);
-
             }
-            //go to center position
+            // Go to center position
             else {
-                //turn off detector
+                // Turn off detector
                 detector.disable();
                 mineralPos = "center";
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
-                dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-                upMotor.setTargetPosition(currentUpPos - 1200);
-                downMotor.setTargetPosition(currentDownPos - 1200);
+                upMotor.setTargetPosition(currentUpPos - 1100);
+                downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
-                intakeFlipServo.setPosition(intakeFlipServoDown);
+                // Turn intake on
                 intakeSpinMotor.setPower(1);
-                //move forward
+                // Move forward
                 encoderDrive(1, 30, 30, 30, 30);
+                // Move forward
                 encoderDrive(1, 40, 40 ,40, 40);
-                //place marker
+                // Turn intake off
                 intakeSpinMotor.setPower(0);
+                // Flip intake up
                 intakeFlipServo.setPosition(intakeFlipServoUp);
+                // Flip marker arm down
                 markerArm.setPosition(markerArmDown);
-                sleep(1000);//for markerarm to have enuf time to drop
+                // Wait for marker to fall down
+                sleep(1000);
+                // Flip marker arm up
                 markerArm.setPosition(markerArmUp);
+                // Move backward
                 encoderDrive(1, -70, -70, -70, -70);
+                // Turn left
                 turnWithImu(-39);
+                // Move forward
                 encoderDrive(1, 65, 65, 65, 65);
+                // Turn left
                 turnWithImu(-50);
+                // Move forward
                 encoderDrive(0.6, 60, 60, 60, 60);
-
             }
+
+            // Turn off detector
             detector.disable();
-            //wakeLock.release();
+            // Wait for timeout
             sleep(300000);
         }
     }
@@ -353,8 +364,8 @@ public class IMUDepotAuto extends LinearOpMode {
         rawAngles = internal_imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //pull data for rawAngle
         lastHeading = -Float.parseFloat(formatAngle(lastAngles.angleUnit, lastAngles.firstAngle));
         rawHeading = -Float.parseFloat(formatAngle(rawAngles.angleUnit, rawAngles.firstAngle));
-        //NEED TO RESET ANGLE EVERY 360!!!
-        //positive to left, negative to right
+        // Need to reset angle every 360
+        // Positive to left, negative to right
         float deltaHeading = rawHeading - lastHeading;
 
         if (deltaHeading < -180)
@@ -395,10 +406,8 @@ public class IMUDepotAuto extends LinearOpMode {
             rrDrive.setPower(-0.8);
             while (getGlobalHeading() < degrees) {
             }
-            //stop all drive motors
         }
+        //Stop all drive motors
         stopDrive();
-
     }
 }
-

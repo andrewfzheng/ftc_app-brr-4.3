@@ -93,7 +93,7 @@ public class LeviColorFilter extends DogeCVColorFilter {
             case YELLOW:
                 if(threshold == -1){
                     //old 50
-                    //room 70
+                    //room 60
                     threshold = 60;
                 }
 

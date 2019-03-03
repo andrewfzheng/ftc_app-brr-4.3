@@ -20,9 +20,7 @@ import java.util.Locale;
 
 @Autonomous(name = "IMUCraterAuto", group = "DogeCV")
 
-
 public class IMUCraterAuto extends LinearOpMode {
-
     // Hardware declaration
     private DcMotor upMotor;
     private DcMotor downMotor;
@@ -35,64 +33,47 @@ public class IMUCraterAuto extends LinearOpMode {
     private Servo dispServo;
     private Servo intakeFlipServo;
     private Servo dispExtensionServo;
-
     // Variables for hardware
     double intakeFlipServoUp = .92;
-    double intakeFlipServoLowMid = 0.61;
     double intakeFlipServoDown = 0.11;
-    double intakeFlipServoTrueMid = 0.35;
-
     double dispServoUp = 0.094 ;
     double dispServoDown = 0.80;
-
     double dispExtensionServoIn = 0.67;
     double dispExtensionServoOut = 0.11;
-
     double markerArmUp = 0.6;
     double markerArmDown = 0.07;
-
     int LiftPower = 1;
-
     double pos = 0;
-
     // Detector object
     private GoldAlignDetector detector;
     private ElapsedTime runtime = new ElapsedTime();
     String mineralPos = "none";
-
-    // Imu setup
+    // REV Expansion Hub IMU setup
     BNO055IMU internal_imu;
     Orientation rawAngles;
     Orientation lastAngles;
-
-    // Imu variables
+    // Variables for IMU
     float rawHeading;
     float lastHeading;
     float globalHeading;
 
-
-
     @Override
     public void runOpMode() throws InterruptedException {
-
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
         detector.useDefaults(); // Set detector to use default settings
-
         // Optional tuning
         detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
         detector.alignPosOffset = 0; // How far from center frame to offset this alignment zone.
         detector.downscale = 0.4; // How much to downscale the input frames
-
         detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
         //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
         detector.maxAreaScorer.weight = 0.005; //
-
         detector.ratioScorer.weight = 5; //
         detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
         detector.enable();
-
+        // Initialize hardware
         flDrive = hardwareMap.get(DcMotor.class, "fl_drive");
         frDrive = hardwareMap.get(DcMotor.class, "fr_drive");
         rlDrive = hardwareMap.get(DcMotor.class, "rl_drive");
@@ -104,53 +85,54 @@ public class IMUCraterAuto extends LinearOpMode {
         dispExtensionServo = hardwareMap.get(Servo.class, "disp_extend_servo");
         intakeFlipServo = hardwareMap.get(Servo.class, "intake_flip_servo");
         intakeSpinMotor = hardwareMap.get(DcMotor.class, "intake_spin_motor");
-
+        // Reset encoders on all motors
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         upMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         downMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        // Set motor behavior when running
         flDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rlDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rrDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         upMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         downMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        // Set behavior of all motors when power received is zero
         flDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         downMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        // Set directions of all motors
         flDrive.setDirection(DcMotor.Direction.FORWARD);
         frDrive.setDirection(DcMotor.Direction.REVERSE);
         rlDrive.setDirection(DcMotor.Direction.FORWARD);
         rrDrive.setDirection(DcMotor.Direction.REVERSE);
         upMotor.setDirection(DcMotor.Direction.FORWARD);
         downMotor.setDirection(DcMotor.Direction.REVERSE);
-
+        // Set position value of vertical lift motors to current position
         int currentUpPos = upMotor.getCurrentPosition();
         int currentDownPos = downMotor.getCurrentPosition();
-
+        // Set target position of vertical lift motors to current position
         upMotor.setTargetPosition(currentUpPos);
         downMotor.setTargetPosition(currentDownPos);
-
+        // Turn on vertical lift motors to hang
         upMotor.setPower(LiftPower);
         downMotor.setPower(LiftPower);
-
+        // Flip marker arm up
         markerArm.setPosition(markerArmUp);
+        // Flip dispenser down
         dispServo.setPosition(dispServoDown);
+        // Retract crater-side extension flap
         dispExtensionServo.setPosition(dispExtensionServoIn);
+        // Flip intake up
         intakeFlipServo.setPosition(intakeFlipServoUp);
-
         // IMU gyro setup
         telemetry.addData(">", "WAIT FOR IMU TO CALIBRATE...");
         telemetry.update();
-
         // Setup for internal IMU data logging - do not touch
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -158,14 +140,11 @@ public class IMUCraterAuto extends LinearOpMode {
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
         // Initialize hardware
         internal_imu = hardwareMap.get(BNO055IMU.class, "internal_imu");
         internal_imu.initialize(parameters);
-
         telemetry.addData(">", "IMU Calibrated: Press Play to start");
         resetGlobalHeading();
-
         telemetry.update();
 
         waitForStart();
@@ -175,7 +154,7 @@ public class IMUCraterAuto extends LinearOpMode {
             dispExtensionServo.setPosition(dispExtensionServoOut);
             // Flip intake down
             intakeFlipServo.setPosition(intakeFlipServoDown);
-            // Detach robot from lander
+            // Lower robot from lander
             upMotor.setTargetPosition(currentUpPos + 1300);
             downMotor.setTargetPosition(currentDownPos + 1300);
             upMotor.setPower(LiftPower);
@@ -200,8 +179,8 @@ public class IMUCraterAuto extends LinearOpMode {
                 // Flip dispenser down
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-                upMotor.setTargetPosition(currentUpPos - 1200);
-                downMotor.setTargetPosition(currentDownPos - 1200);
+                upMotor.setTargetPosition(currentUpPos - 1100);
+                downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
                 // Turn intake on
@@ -244,8 +223,8 @@ public class IMUCraterAuto extends LinearOpMode {
                 // Flip dispenser down
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-                upMotor.setTargetPosition(currentUpPos - 1200);
-                downMotor.setTargetPosition(currentDownPos - 1200);
+                upMotor.setTargetPosition(currentUpPos - 1100);
+                downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
                 // Turn intake on
@@ -289,8 +268,8 @@ public class IMUCraterAuto extends LinearOpMode {
                 // Flip dispenser down
                 dispServo.setPosition(dispServoDown);
                 // Lower dispenser
-                upMotor.setTargetPosition(currentUpPos - 1200);
-                downMotor.setTargetPosition(currentDownPos - 1200);
+                upMotor.setTargetPosition(currentUpPos - 1100);
+                downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
                 downMotor.setPower(-LiftPower);
                 // Turn intake on
@@ -388,8 +367,8 @@ public class IMUCraterAuto extends LinearOpMode {
         rawAngles = internal_imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES); //pull data for rawAngle
         lastHeading = -Float.parseFloat(formatAngle(lastAngles.angleUnit, lastAngles.firstAngle));
         rawHeading = -Float.parseFloat(formatAngle(rawAngles.angleUnit, rawAngles.firstAngle));
-        //NEED TO RESET ANGLE EVERY 360!!!
-        //positive to left, negative to right
+        // Need to reset angle every 360
+        // Positive to left, negative to right
         float deltaHeading = rawHeading - lastHeading;
 
         if (deltaHeading < -180)
@@ -430,10 +409,9 @@ public class IMUCraterAuto extends LinearOpMode {
             rrDrive.setPower(-0.8);
             while (getGlobalHeading() < degrees) {
             }
-            //stop all drive motors
         }
+        //Stop all drive motors
         stopDrive();
-
     }
 }
 
