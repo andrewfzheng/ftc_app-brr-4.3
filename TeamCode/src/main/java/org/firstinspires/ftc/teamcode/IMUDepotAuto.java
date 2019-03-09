@@ -38,7 +38,7 @@ public class IMUDepotAuto extends LinearOpMode {
     double intakeFlipServoUp = .92;
     double intakeFlipServoDown = 0.11;
     double dispServoUp = 0.094 ;
-    double dispServoDown = 0.80;
+    double dispServoDown = 0.76;
     double dispExtensionServoIn = 0.67;
     double dispExtensionServoOut = 0.11;
     double markerArmUp = 0.6;
@@ -211,7 +211,7 @@ public class IMUDepotAuto extends LinearOpMode {
                 // Turn left
                 turnWithImu(-55);
                 // Move forward
-                encoderDrive(0.6, 140, 140, 140, 140);
+                encoderDrive(0.6, 130, 130, 130, 130);
                 // Turn left
                 turnWithImu(-15);
                 // Move forward
@@ -251,7 +251,7 @@ public class IMUDepotAuto extends LinearOpMode {
                 // Turn right
                 turnWithImu(170);
                 // Move forward
-                encoderDrive(.6, 100, 100, 100, 100);
+                encoderDrive(.6, 80, 80, 80, 80);
                 // Flip marker arm up
                 markerArm.setPosition(markerArmUp);
                 // Turn right
@@ -267,6 +267,7 @@ public class IMUDepotAuto extends LinearOpMode {
                 telemetry.addData("Mineral position", mineralPos);
                 telemetry.update();
                 // Lower dispenser
+                dispServo.setPosition(dispServoDown);
                 upMotor.setTargetPosition(currentUpPos - 1100);
                 downMotor.setTargetPosition(currentDownPos - 1100);
                 upMotor.setPower(-LiftPower);
@@ -288,7 +289,7 @@ public class IMUDepotAuto extends LinearOpMode {
                 // Flip marker arm up
                 markerArm.setPosition(markerArmUp);
                 // Move backward
-                encoderDrive(1, -70, -70, -70, -70);
+                encoderDrive(1, -65, -65, -65, -65);
                 // Turn left
                 turnWithImu(-39);
                 // Move forward
@@ -296,7 +297,7 @@ public class IMUDepotAuto extends LinearOpMode {
                 // Turn left
                 turnWithImu(-50);
                 // Move forward
-                encoderDrive(0.6, 60, 60, 60, 60);
+                encoderDrive(0.6, 73, 73, 73, 73);
             }
 
             // Turn off detector

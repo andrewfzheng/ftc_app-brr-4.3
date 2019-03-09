@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
@@ -79,7 +80,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         rrDrive.setDirection(DcMotor.Direction.FORWARD);
         upMotor.setDirection(DcMotor.Direction.FORWARD);
         downMotor.setDirection(DcMotor.Direction.REVERSE);
-        inMotor.setDirection(DcMotor.Direction.REVERSE);
+        inMotor.setDirection(DcMotor.Direction.FORWARD);
         intakeSpinMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Variables for hardware
@@ -96,7 +97,7 @@ public class TileRunnerTeleOp extends LinearOpMode {
         boolean isAccelReleased = false;
         boolean isAccelOn = false;
         double dispServoUp = 0.094;
-        double dispServoDown = 0.80;
+        double dispServoDown = 0.76;
         boolean isDispServoReleased = true;
         boolean isDispServoUp = false;
         double dispExtensionServoOut = 0.11;
@@ -232,10 +233,10 @@ public class TileRunnerTeleOp extends LinearOpMode {
             // Horizontal intake retraction
             if (gamepad1.y) {
                 inMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                inMotor.setPower(1);
+                inMotor.setPower(-0.25);
             } else if (gamepad1.x) {
                 inMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                inMotor.setPower(-1);
+                inMotor.setPower(0.25);
             } else {
                 inMotor.setPower(0);
             }

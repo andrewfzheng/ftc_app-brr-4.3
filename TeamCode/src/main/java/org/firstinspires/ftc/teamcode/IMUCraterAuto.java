@@ -37,7 +37,7 @@ public class IMUCraterAuto extends LinearOpMode {
     double intakeFlipServoUp = .92;
     double intakeFlipServoDown = 0.11;
     double dispServoUp = 0.094 ;
-    double dispServoDown = 0.80;
+    double dispServoDown = 0.76;
     double dispExtensionServoIn = 0.67;
     double dispExtensionServoOut = 0.11;
     double markerArmUp = 0.6;
@@ -209,7 +209,7 @@ public class IMUCraterAuto extends LinearOpMode {
                 // Move backward
                 encoderDrive(1, -3, -3, -3, -3);
                 // Turn left
-                turnWithImu(-13);
+                turnWithImu(-12);
                 // Move backward
                 encoderDrive(0.6, -135, -135, -135, -135);
             }
@@ -244,7 +244,7 @@ public class IMUCraterAuto extends LinearOpMode {
                 // Move forward
                 encoderDrive(1, 77, 77, 77, 77);
                 // Turn left
-                turnWithImu(-53);
+                turnWithImu(-54);
                 // Move forward
                 encoderDrive(1, 100, 100, 100, 100);
                 // Turn right
@@ -298,7 +298,7 @@ public class IMUCraterAuto extends LinearOpMode {
                 // Move backward
                 encoderDrive(1, -3, -3, -3, -3);
                 // Turn left
-                turnWithImu(-9);
+                turnWithImu(-7);
                 // Move backwards
                 encoderDrive(0.6, -140, -140, -140, -140);
             }
